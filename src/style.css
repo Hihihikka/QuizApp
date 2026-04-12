@@ -6,24 +6,24 @@
 
 :root {
   --gold: #c9a84c;
-  --gold-light: #f0d080;
-  --bg-dark: #111111;
-  --bg-card: #1a1a1a;
-  --bg-header: #161616;
+  --gold-light: #e8c96a;
+  --bg-dark: #0e0b07;
+  --bg-card: rgba(35, 28, 18, 0.97);
+  --bg-header: rgba(28, 22, 13, 0.98);
   --text-primary: #ffffff;
-  --text-muted: #777777;
+  --text-muted: #8a7a5a;
   --text-green: #4caf50;
-  --border-gold: rgba(201, 168, 76, 0.3);
-  --glow-gold: rgba(201, 168, 76, 0.5);
+  --border-gold: rgba(201, 168, 76, 0.35);
+  --glow-gold: rgba(201, 168, 76, 0.45);
   --radius: 12px;
 }
 
 body {
-  background: 
-    radial-gradient(ellipse at 15% 50%, rgba(101, 67, 10, 0.4) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 50%, rgba(101, 67, 10, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 100%, rgba(80, 50, 5, 0.3) 0%, transparent 60%),
-    #0d0d0d;
+  background-image: url('/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: 'Segoe UI', sans-serif;
   min-height: 100vh;
@@ -42,7 +42,7 @@ body {
   grid-template-areas:
     "header header"
     "main sidebar";
-  background-color: rgba(26, 26, 26, 0.95);
+  background-color: rgba(20, 15, 8, 0.96);
   border: 1px solid var(--border-gold);
   border-radius: 16px;
   overflow: hidden;

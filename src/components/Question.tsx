@@ -1,10 +1,8 @@
 interface Props {
   text: string
-  questionNumber: number
-  total: number
 }
 
-export default function Question({ text, questionNumber, total }: Props) {
+export default function Question({ text }: Props) {
   return (
     <div className="question-card">
       <p className="question-card__text">{text}</p>

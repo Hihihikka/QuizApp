@@ -50,7 +50,7 @@ export default function App() {
           <FinalScreen score={score} total={questions.length} onRestart={handleRestart} />
         ) : (
           <>
-            <Question text={questions[currentIndex].text} questionNumber={currentIndex + 1} total={questions.length} />
+            <Question text={questions[currentIndex].text} />
             <Answers
               answers={questions[currentIndex].answers}
               correctAnswer={questions[currentIndex].correctAnswer}

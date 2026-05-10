@@ -32,16 +32,17 @@ body {
   align-items: center;
 }
 
-#app {
+#root {
   width: 95%;
   max-width: 1200px;
   min-height: 90vh;
   display: grid;
   grid-template-columns: 1fr 280px;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   grid-template-areas:
     "header header"
-    "main sidebar";
+    "main sidebar"
+    "footer footer";
   background-color: rgba(20, 15, 8, 0.96);
   border: 1px solid var(--border-gold);
   border-radius: 16px;

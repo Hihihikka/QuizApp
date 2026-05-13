@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Header from './components/Header'
 import Question from './components/Question'
 import Answers from './components/Answers'
 import Sidebar from './components/Sidebar'
 import FinalScreen from './components/FinalScreen'
+import NextButton from './components/NextButton'
 import { questions } from './data/questions'
 
 export default function App() {
@@ -12,12 +13,21 @@ export default function App() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isFinished, setIsFinished] = useState(false)
 
-  function handleAnswer(answer: string): void {
-    setSelectedAnswer(answer)
-    if (answer === questions[currentIndex].correctAnswer) {
-      setScore(prev => prev + 100)
+    function shuffleAnswers(answers: string[]): string[] {
+      return [...answers].sort(() => Math.random() - 0.5)
     }
-  }
+
+    const shuffledAnswers = useMemo(
+      () => shuffleAnswers(questions[currentIndex].answers),
+      [currentIndex]
+    )
+
+    function handleAnswer(answer: string): void {
+      setSelectedAnswer(answer)
+      if (answer === questions[currentIndex].answers[0]) {
+        setScore(prev => prev + 100)
+      }
+    }
 
   function handleNext(): void {
     if (currentIndex + 1 < questions.length) {
@@ -52,15 +62,13 @@ export default function App() {
           <>
             <Question text={questions[currentIndex].text} />
             <Answers
-              answers={questions[currentIndex].answers}
-              correctAnswer={questions[currentIndex].correctAnswer}
+              answers={shuffledAnswers}
+              correctAnswer={questions[currentIndex].answers[0]}
               selectedAnswer={selectedAnswer}
               onAnswer={handleAnswer}
             />
             {selectedAnswer && (
-              <button className="next-btn" onClick={handleNext}>
-                NEXT QUESTION →
-              </button>
+              <NextButton onClick={handleNext} />
             )}
           </>
         )}

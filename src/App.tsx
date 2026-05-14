@@ -12,6 +12,13 @@ export default function App() {
   const [score, setScore] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isFinished, setIsFinished] = useState(false)
+  const [theme, setTheme] = useState('dark')
+
+  function handleThemeToggle(): void {
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(newTheme)
+    document.body.setAttribute('data-theme', newTheme)
+  }
 
     function shuffleAnswers(answers: string[]): string[] {
       return [...answers].sort(() => Math.random() - 0.5)
@@ -47,12 +54,12 @@ export default function App() {
 
   return (
     <>
-      <Header />
+      <Header theme={theme} onThemeToggle={handleThemeToggle} />
       <main className="main">
         <div className="progress">
           <span className="progress__label">QUESTION {currentIndex + 1} OF {questions.length}</span>
           <div className="progress__bar">
-            <div className="progress__fill" style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}></div>
+            <div className="progress__fill" style={{ width: `${(selectedAnswer ? currentIndex + 1 : currentIndex) / questions.length * 100}%` }}></div>
           </div>
         </div>
 

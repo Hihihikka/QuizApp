@@ -1,4 +1,9 @@
-export default function Header() {
+interface Props {
+  theme: string
+  onThemeToggle: () => void
+}
+
+export default function Header({ theme, onThemeToggle }: Props) {
   return (
     <header className="header">
       <div className="header__logo">
@@ -8,7 +13,12 @@ export default function Header() {
           <p>KNOWLEDGE. LUCK. GLORY.</p>
         </div>
       </div>
-      <button className="header__rating-btn">🏆 Rating</button>
+      <div className="header__controls">
+        <button className="header__theme-btn" onClick={onThemeToggle}>
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+        <button className="header__rating-btn">🏆 Rating</button>
+      </div>
     </header>
   )
 }

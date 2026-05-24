@@ -1,8 +1,57 @@
 interface Props {
   score: number
+  chestPoints: number
+  chestsOpenedToday: number
 }
 
-export default function Sidebar({ score }: Props) {
+const CHEST_SPRITES = {
+  bronze: {
+    closed: { x: 537, y: 6, w: 199, h: 280, rotate: false },
+    open: { x: 627, y: 289, w: 313, h: 341, rotate: false },
+  },
+  silver: {
+    closed: { x: 336, y: 6, w: 199, h: 280, rotate: false },
+    open: { x: 313, y: 289, w: 313, h: 341, rotate: false },
+  },
+  gold: {
+    closed: { x: 738, y: 7, w: 174, h: 280, rotate: false },
+    open: { x: 0, y: 289, w: 313, h: 341, rotate: false },
+  },
+}
+
+  function ChestIcon({ type, isOpen }: { type: 'bronze' | 'silver' | 'gold', isOpen: boolean }) {
+    const sprite = CHEST_SPRITES[type][isOpen ? 'open' : 'closed']
+    const scale = 0.2
+    const atlasW = 1938
+    const atlasH = 632
+
+    const style: React.CSSProperties = sprite.rotate
+      ? {
+          width: sprite.h * scale,
+          height: sprite.w * scale,
+          backgroundImage: 'url(/LootBox.png)',
+          backgroundSize: `${atlasW * scale}px ${atlasH * scale}px`,
+          backgroundPosition: `-${sprite.x * scale}px -${sprite.y * scale}px`,
+          transform: 'rotate(90deg)',
+          display: 'inline-block',
+          flexShrink: 0,
+        }
+      : {
+          width: sprite.w * scale,
+          height: sprite.h * scale,
+          backgroundImage: 'url(/LootBox.png)',
+          backgroundSize: `${atlasW * scale}px ${atlasH * scale}px`,
+          backgroundPosition: `-${sprite.x * scale}px -${sprite.y * scale}px`,
+          display: 'inline-block',
+          flexShrink: 0,
+        }
+
+    return <div style={style} />
+  }
+
+export default function Sidebar({ score, chestPoints, chestsOpenedToday }: Props) {
+  const pointsInCurrentChest = chestPoints % 1000
+
   return (
     <aside className="sidebar">
       <div className="sidebar__card">
@@ -11,14 +60,19 @@ export default function Sidebar({ score }: Props) {
       </div>
       <div className="sidebar__card">
         <span className="sidebar__card-label">UNTIL THE NEXT LOOTBOX</span>
-        <span className="sidebar__card-value">650 / 1000</span>
+        <span className="sidebar__card-value">{pointsInCurrentChest} / 1000</span>
         <div className="sidebar__progress-bar">
-          <div className="sidebar__progress-fill"></div>
+          <div className="sidebar__progress-fill" style={{ width: `${pointsInCurrentChest / 10}%` }}></div>
         </div>
       </div>
       <div className="sidebar__card">
         <span className="sidebar__card-label">OPENED LOOTBOXES</span>
-        <span className="sidebar__card-value">1 / 3</span>
+        <span className="sidebar__card-value">{chestsOpenedToday} / 3</span>
+        <div className="sidebar__chests">
+          <ChestIcon type="bronze" isOpen={chestsOpenedToday >= 1} />
+          <ChestIcon type="silver" isOpen={chestsOpenedToday >= 2} />
+          <ChestIcon type="gold" isOpen={chestsOpenedToday >= 3} />
+        </div>
       </div>
       <div className="sidebar__card">
         <span className="sidebar__card-label">ACTIVE LUCK MULTIPLIER</span>

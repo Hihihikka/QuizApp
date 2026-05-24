@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import Header from './components/Header'
 import Question from './components/Question'
 import Answers from './components/Answers'
@@ -41,14 +41,15 @@ export default function App() {
     if (answer === questions[currentIndex].answers[0]) {
       setCorrectCount(prev => prev + 1)
 
-      const firstThird = QUESTION_TIME * (2 / 3)
-      const isInBonus = timeLeft >= firstThird
+      const bonus = (() => {
+        const firstThird = QUESTION_TIME * (2 / 3)
+        if (timeLeft < firstThird) return 0
+        return Math.round(30 * Math.log(1 + (timeLeft - firstThird) / (QUESTION_TIME - firstThird)) / Math.log(2))
+      })()
 
-      const bonus = isInBonus
-        ? Math.round(30 * Math.log(1 + (timeLeft - firstThird) / (QUESTION_TIME - firstThird)) / Math.log(2))
-        : 0
-
-      setScore(prev => prev + 100 + bonus)
+      const points = 500 + bonus
+      setScore(prev => prev + points)
+      setChestPoints(prev => prev + points)
     }
   }
 
@@ -58,6 +59,9 @@ export default function App() {
       setSelectedAnswer(null)
       setTimeLeft(QUESTION_TIME)
     } else {
+      const chests = calculateChests(chestPoints)
+      setChestsToOpen(chests)
+      setIsOpeningChest(chests.length > 0)
       setIsFinished(true)
     }
   }
@@ -76,6 +80,14 @@ export default function App() {
     const count = Math.min(Math.floor(points / 1000), 3 - chestsOpenedToday)
     return chestOrder.slice(chestsOpenedToday, chestsOpenedToday + count)
   }
+
+  const handleChestComplete = useCallback((): void => {
+    setChestsOpenedToday(prev => prev + 1)
+    setChestsToOpen(prev => prev.slice(1))
+    if (chestsToOpen.length <= 1) {
+      setIsOpeningChest(false)
+    }
+  }, [chestsToOpen.length])
 
   useEffect(() => {
     if (selectedAnswer || isFinished) return
@@ -104,7 +116,12 @@ export default function App() {
           </div>
         </div>
 
-        {isFinished ? (
+        {isOpeningChest && chestsToOpen.length > 0 ? (
+          <LootboxScreen
+            chestType={chestsToOpen[0]}
+            onComplete={handleChestComplete}
+          />
+        ) : isFinished ? (
           <FinalScreen score={score} total={questions.length} correctCount={correctCount} onRestart={handleRestart} />
         ) : (
           <>
@@ -128,7 +145,7 @@ export default function App() {
           <p>© 2026 Quiz & Poker. All rights reserved.</p>
         </footer>
       </main>
-      <Sidebar score={score} />
+      <Sidebar score={score} chestPoints={chestPoints} chestsOpenedToday={chestsOpenedToday} />
     </>
   )
 }

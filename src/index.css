@@ -491,6 +491,13 @@ body[data-theme="light"] {
   border-radius: 4px;
 }
 
+.sidebar__chests {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
   body {

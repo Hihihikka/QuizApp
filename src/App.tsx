@@ -1,18 +1,25 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Header from './components/Header'
 import Question from './components/Question'
 import Answers from './components/Answers'
 import Sidebar from './components/Sidebar'
+import LootboxScreen from './components/LootboxScreen'
 import FinalScreen from './components/FinalScreen'
 import NextButton from './components/NextButton'
-import { questions } from './data/questions'
+import { questions, QUESTION_TIME } from './data/questions'
 
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [correctCount, setCorrectCount] = useState(0)
   const [score, setScore] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isFinished, setIsFinished] = useState(false)
   const [theme, setTheme] = useState('dark')
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME)
+  const [chestPoints, setChestPoints] = useState(0)
+  const [chestsToOpen, setChestsToOpen] = useState<('bronze' | 'silver' | 'gold')[]>([])
+  const [isOpeningChest, setIsOpeningChest] = useState(false)
+  const [chestsOpenedToday, setChestsOpenedToday] = useState(0)
 
   function handleThemeToggle(): void {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
@@ -20,26 +27,36 @@ export default function App() {
     document.body.setAttribute('data-theme', newTheme)
   }
 
-    function shuffleAnswers(answers: string[]): string[] {
-      return [...answers].sort(() => Math.random() - 0.5)
-    }
+  function shuffleAnswers(answers: string[]): string[] {
+    return [...answers].sort(() => Math.random() - 0.5)
+  }
 
-    const shuffledAnswers = useMemo(
-      () => shuffleAnswers(questions[currentIndex].answers),
-      [currentIndex]
-    )
+  const shuffledAnswers = useMemo(
+    () => shuffleAnswers(questions[currentIndex].answers),
+    [currentIndex]
+  )
 
-    function handleAnswer(answer: string): void {
-      setSelectedAnswer(answer)
-      if (answer === questions[currentIndex].answers[0]) {
-        setScore(prev => prev + 100)
-      }
+  function handleAnswer(answer: string): void {
+    setSelectedAnswer(answer)
+    if (answer === questions[currentIndex].answers[0]) {
+      setCorrectCount(prev => prev + 1)
+
+      const firstThird = QUESTION_TIME * (2 / 3)
+      const isInBonus = timeLeft >= firstThird
+
+      const bonus = isInBonus
+        ? Math.round(30 * Math.log(1 + (timeLeft - firstThird) / (QUESTION_TIME - firstThird)) / Math.log(2))
+        : 0
+
+      setScore(prev => prev + 100 + bonus)
     }
+  }
 
   function handleNext(): void {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(prev => prev + 1)
       setSelectedAnswer(null)
+      setTimeLeft(QUESTION_TIME)
     } else {
       setIsFinished(true)
     }
@@ -47,10 +64,34 @@ export default function App() {
 
   function handleRestart(): void {
     setCurrentIndex(0)
+    setCorrectCount(0)
     setScore(0)
     setSelectedAnswer(null)
     setIsFinished(false)
+    setTimeLeft(QUESTION_TIME)
   }
+
+  function calculateChests(points: number): ('bronze' | 'silver' | 'gold')[] {
+    const chestOrder: ('bronze' | 'silver' | 'gold')[] = ['bronze', 'silver', 'gold']
+    const count = Math.min(Math.floor(points / 1000), 3 - chestsOpenedToday)
+    return chestOrder.slice(chestsOpenedToday, chestsOpenedToday + count)
+  }
+
+  useEffect(() => {
+    if (selectedAnswer || isFinished) return
+
+    const timer = setTimeout(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          setSelectedAnswer('__timeout__')
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [timeLeft, selectedAnswer, isFinished])
 
   return (
     <>
@@ -64,10 +105,14 @@ export default function App() {
         </div>
 
         {isFinished ? (
-          <FinalScreen score={score} total={questions.length} onRestart={handleRestart} />
+          <FinalScreen score={score} total={questions.length} correctCount={correctCount} onRestart={handleRestart} />
         ) : (
           <>
-            <Question text={questions[currentIndex].text} />
+            <Question
+              text={questions[currentIndex].text}
+              timeLeft={timeLeft}
+              maxTime={QUESTION_TIME}
+            />
             <Answers
               answers={shuffledAnswers}
               correctAnswer={questions[currentIndex].answers[0]}

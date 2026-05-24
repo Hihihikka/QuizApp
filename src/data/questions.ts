@@ -1,3 +1,4 @@
+export const QUESTION_TIME = 15
 export interface Question {
   text: string
   answers: string[]

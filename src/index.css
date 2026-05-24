@@ -212,28 +212,63 @@ body[data-theme="light"] {
   color: var(--text-primary);
 }
 
+/* TIMER */
 .timer {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 76px;
   height: 76px;
-  border-radius: 50%;
-  border: 3px solid var(--gold);
-  box-shadow: 0 0 16px var(--glow-gold);
 }
 
 .timer__value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+  line-height: 1;
 }
 
 .timer__label {
   font-size: 10px;
   color: var(--text-muted);
+  position: relative;
+  z-index: 1;
   letter-spacing: 1px;
+}
+
+.timer__ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 76px;
+  height: 76px;
+  transform: rotate(-90deg);
+}
+
+.timer__ring-bg {
+  fill: none;
+  stroke: var(--bg-progress-bar);
+  stroke-width: 3;
+}
+
+.timer__ring-fill {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s linear, stroke 0.3s ease;
+}
+
+.timer--urgent .timer__ring-fill {
+  color: var(--color-wrong);
+}
+
+.timer--urgent .timer__value {
+  color: var(--color-wrong);
 }
 
 /* ANSWER BUTTONS */
@@ -356,6 +391,36 @@ body[data-theme="light"] {
 
 .hidden {
   display: none;
+}
+
+/* LOOTBOX SCREEN */
+.lootbox-screen {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+}
+
+.lootbox-screen__title {
+  font-size: 28px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.lootbox-screen__canvas {
+  width: 600px;
+  height: 500px;
+}
+
+.lootbox-screen__hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 /* FOOTER */

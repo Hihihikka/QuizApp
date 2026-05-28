@@ -1,14 +1,16 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import Header from './components/Header'
-import Question from './components/Question'
-import Answers from './components/Answers'
-import Sidebar from './components/Sidebar'
-import LootboxScreen from './components/LootboxScreen'
-import FinalScreen from './components/FinalScreen'
-import NextButton from './components/NextButton'
-import { questions, QUESTION_TIME } from './data/questions'
+//import { useParams } from 'react-router-dom'
+import Header from '../../components/Header'
+import Question from '../../components/Question'
+import Answers from '../../components/Answers'
+import Sidebar from '../../components/Sidebar'
+import LootboxScreen from '../../components/LootboxScreen'
+import FinalScreen from '../../components/FinalScreen'
+import NextButton from '../../components/NextButton'
+import { questions, QUESTION_TIME } from '../../data/questions'
 
-export default function App() {
+export default function PlayPage() {
+  //const { sessionCode } = useParams()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [correctCount, setCorrectCount] = useState(0)
   const [score, setScore] = useState(0)

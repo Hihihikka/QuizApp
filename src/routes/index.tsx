@@ -1,29 +1,29 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from 'react-router-dom'
 
-import PublicLayout from "../layouts/PublicLayout";
-import AppLayout from "../layouts/AppLayout";
-import ProtectedRoute from "./ProtectedRoute";
+import PublicLayout from '../layouts/PublicLayout'
+import AppLayout from '../layouts/AppLayout'
+import ProtectedRoute from './ProtectedRoute'
 
-import PlayPage from "../pages/game/PlayPage";
-// import JoinPage from "../pages/JoinPage";
-
-// import LoginPage from "../pages/auth/LoginPage.tsx";
-// import RegisterPage from "../pages/auth/RegisterPage";
-
-// import Dashboard from "../pages/app/Dashboard";
-// import Quizzes from "../pages/app/Quizzes";
-// import CreateQuiz from "../pages/app/CreateQuiz";
+import PlayPage from '../pages/game/PlayPage'
+import CreateQuiz from '../pages/app/CreateQuiz'
+import Quizzes from '../pages/app/Quizzes'
+// import Dashboard from '../pages/app/Dashboard'
+// import LoginPage from '../pages/auth/LoginPage'
+// import RegisterPage from '../pages/auth/RegisterPage'
+// import JoinPage from '../pages/JoinPage'
 
 export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
-    //   { path: "/", element: <JoinPage /> },
-    //   { path: "/join", element: <JoinPage /> },
-    //   { path: "/play/:sessionCode", element: <PlayPage /> },
-      { path: "/play", element: <PlayPage /> },
-    //   { path: "/login", element: <LoginPage /> },
-    //   { path: "/register", element: <RegisterPage /> },
+      // Публичные игровые маршруты
+      { path: '/', element: <Quizzes /> },              // временный root
+      { path: '/play', element: <PlayPage /> },          // demo/fallback квиз
+      { path: '/play/:quizId', element: <PlayPage /> },  // квиз по id
+
+      // { path: '/join', element: <JoinPage /> },
+      // { path: '/login', element: <LoginPage /> },
+      // { path: '/register', element: <RegisterPage /> },
     ],
   },
 
@@ -31,14 +31,15 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: "/app",
+        path: '/app',
         element: <AppLayout />,
         children: [
-        //   { path: "dashboard", element: <Dashboard /> },
-        //   { path: "quizzes", element: <Quizzes /> },
-        //   { path: "quizzes/create", element: <CreateQuiz /> },
+          // { path: 'dashboard', element: <Dashboard /> },
+          { path: 'quizzes', element: <Quizzes /> },
+          { path: 'quizzes/create', element: <CreateQuiz /> },
+          // { path: 'quizzes/:id/edit', element: <EditQuiz /> },
         ],
       },
     ],
   },
-]);
+])

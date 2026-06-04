@@ -19,12 +19,10 @@ export default function RootLayout() {
       <main className="main">
         <Outlet />
         <footer className="footer">
-            <p>© 2026 Quiz &amp; Poker. All rights reserved.</p>
+          <p>© 2026 Quiz &amp; Poker. All rights reserved.</p>
         </footer>
       </main>
-      <aside className="sidebar">
-        {SidebarComponent && <SidebarComponent />}
-      </aside>
+      {SidebarComponent && <SidebarComponent />}
     </>
   )
 }

@@ -1,0 +1,64 @@
+/* Global styles */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-image: url('/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body[data-theme="light"] {
+  background-image: url('/bg-light.png');
+}
+
+#root {
+  width: 95%;
+  max-width: 1200px;
+  min-height: 90vh;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "main sidebar"
+    "footer footer";
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    align-items: flex-start;
+  }
+
+  #root {
+    width: 100%;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main";
+    border-radius: 0;
+    border: none;
+    min-height: 100vh;
+  }
+}

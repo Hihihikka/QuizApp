@@ -1,0 +1,88 @@
+.card {
+  width: 100%;
+  background-color: var(--bg-header);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+}
+
+.text {
+  font-size: 22px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.timer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+}
+
+.timerValue {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+.timerLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
+  letter-spacing: 1px;
+}
+
+.timerRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 76px;
+  height: 76px;
+  transform: rotate(-90deg);
+}
+
+.timerRingBg {
+  fill: none;
+  stroke: var(--bg-progress-bar);
+  stroke-width: 3;
+}
+
+.timerRingFill {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s linear, stroke 0.3s ease;
+}
+
+/* urgent state — применяется через data-атрибут чтобы не городить cx() */
+.timer[data-urgent='true'] .timerRingFill {
+  stroke: var(--color-wrong);
+}
+
+.timer[data-urgent='true'] .timerValue {
+  color: var(--color-wrong);
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 32px 20px;
+  }
+
+  .text {
+    font-size: 18px;
+  }
+}

@@ -1,3 +1,5 @@
+import s from './Answers.module.css'
+
 interface Props {
   answers: string[]
   correctAnswer: string
@@ -7,13 +9,17 @@ interface Props {
 
 export default function Answers({ answers, correctAnswer, selectedAnswer, onAnswer }: Props) {
   return (
-    <div className="answers-grid">
+    <div className={s.grid}>
       {answers.map(answer => {
-        let className = 'answer-btn'
-        if (selectedAnswer) {
-          if (answer === correctAnswer) className += ' answer-btn--correct'
-          else if (answer === selectedAnswer) className += ' answer-btn--wrong'
-        }
+        const isCorrect = selectedAnswer && answer === correctAnswer
+        const isWrong = selectedAnswer && answer === selectedAnswer && answer !== correctAnswer
+
+        const className = [
+          s.btn,
+          isCorrect && s.correct,
+          isWrong && s.wrong,
+        ].filter(Boolean).join(' ')
+
         return (
           <button
             key={answer}

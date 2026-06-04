@@ -1,3 +1,5 @@
+import s from './Header.module.css'
+
 interface Props {
   theme: string
   onThemeToggle: () => void
@@ -5,19 +7,19 @@ interface Props {
 
 export default function Header({ theme, onThemeToggle }: Props) {
   return (
-    <header className="header">
-      <div className="header__logo">
-        <span className="header__logo-icon">♠</span>
-        <div className="header__logo-text">
+    <header className={s.header}>
+      <div className={s.logo}>
+        <span className={s.logoIcon}>♠</span>
+        <div className={s.logoText}>
           <h1>QUIZ & POKER</h1>
           <p>KNOWLEDGE. LUCK. GLORY.</p>
         </div>
       </div>
-      <div className="header__controls">
-        <button className="header__theme-btn" onClick={onThemeToggle}>
+      <div className={s.controls}>
+        <button className={s.themeBtn} onClick={onThemeToggle}>
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
-        <button className="header__rating-btn">🏆 Rating</button>
+        <button className={s.ratingBtn}>🏆 Rating</button>
       </div>
     </header>
   )

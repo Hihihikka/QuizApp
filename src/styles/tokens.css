@@ -1,0 +1,39 @@
+/* Design tokens — подключается один раз в main.tsx */
+/* Все компоненты используют эти переменные через var(--...) */
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c96a;
+  --bg-dark: #0e0b07;
+  --bg-card: rgba(35, 28, 18, 0.97);
+  --bg-header: rgba(28, 22, 13, 0.98);
+  --bg-progress-bar: #2a2a2a;
+  --color-correct: #4caf50;
+  --color-correct-rgb: 76, 175, 80;
+  --color-wrong: #e53935;
+  --color-wrong-rgb: 229, 57, 53;
+  --text-primary: #ffffff;
+  --text-muted: #8a7a5a;
+  --text-green: #4caf50;
+  --border-gold: rgba(201, 168, 76, 0.35);
+  --glow-gold: rgba(201, 168, 76, 0.45);
+  --radius: 12px;
+}
+
+[data-theme="light"] {
+  --gold: #7a5500;
+  --gold-light: #9a6e00;
+  --bg-card: rgba(252, 240, 195, 0.97);
+  --bg-header: rgba(248, 232, 178, 0.99);
+  --bg-dark: #faf0d0;
+  --bg-progress-bar: #c8a84a;
+  --color-correct: #1b5e20;
+  --color-correct-rgb: 27, 94, 32;
+  --color-wrong: #b71c1c;
+  --color-wrong-rgb: 183, 28, 28;
+  --text-primary: #2c1a00;
+  --text-muted: #7a5500;
+  --text-green: #1b5e20;
+  --border-gold: rgba(122, 85, 0, 0.5);
+  --glow-gold: rgba(122, 85, 0, 0.3);
+}

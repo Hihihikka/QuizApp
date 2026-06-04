@@ -1,3 +1,5 @@
+import s from './FinalScreen.module.css'
+
 interface Props {
   score: number
   total: number
@@ -7,12 +9,12 @@ interface Props {
 
 export default function FinalScreen({ score, total, correctCount, onRestart }: Props) {
   return (
-    <div className="final-screen">
-      <h2 className="final-screen__title">GAME OVER</h2>
-      <p className="final-screen__label">YOUR SCORE</p>
-      <span className="final-screen__score">✦ {score}</span>
-      <p className="final-screen__label">{correctCount} correct out of {total}</p>
-      <button className="restart-btn" onClick={onRestart}>PLAY AGAIN</button>
+    <div className={s.screen}>
+      <h2 className={s.title}>GAME OVER</h2>
+      <p className={s.label}>YOUR SCORE</p>
+      <span className={s.score}>✦ {score}</span>
+      <p className={s.label}>{correctCount} correct out of {total}</p>
+      <button className={s.restartBtn} onClick={onRestart}>PLAY AGAIN</button>
     </div>
   )
 }

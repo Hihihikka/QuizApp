@@ -1,0 +1,82 @@
+.header {
+  grid-area: header;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoIcon {
+  font-size: 34px;
+  color: var(--gold);
+  filter: drop-shadow(0 0 6px var(--glow-gold));
+}
+
+.logoText h1 {
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+
+.logoText p {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.themeBtn {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.themeBtn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 10px var(--glow-gold);
+}
+
+.ratingBtn {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--text-primary);
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ratingBtn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 10px var(--glow-gold);
+}
+
+@media (max-width: 768px) {
+  .logoText p {
+    display: none;
+  }
+
+  .logoText h1 {
+    font-size: 15px;
+  }
+}

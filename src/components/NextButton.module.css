@@ -1,0 +1,18 @@
+.btn {
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--gold);
+  padding: 14px 32px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  align-self: flex-end;
+}
+
+.btn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px var(--glow-gold);
+}

@@ -13,12 +13,12 @@ export default function Quizzes() {
   return (
     <div className="quizzes-page">
       <div className="quizzes-page__header">
-        <h1>Мои квизы</h1>
+        <h1>My quizzes</h1>
         <button
           className="btn btn--primary"
           onClick={() => navigate('/app/quizzes/create')}
         >
-          + Создать квиз
+          + Create quiz
         </button>
       </div>
 

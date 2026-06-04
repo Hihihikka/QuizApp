@@ -128,19 +128,19 @@ export default function CreateQuiz() {
   return (
     <div className="create-quiz">
       <div className="create-quiz__header">
-        <h1 className="create-quiz__title">Новый квиз</h1>
-        <p className="create-quiz__subtitle">Заполните данные и добавьте вопросы</p>
+        <h1 className="create-quiz__title">New quiz</h1>
+        <p className="create-quiz__subtitle">Fill in data and add questions</p>
       </div>
 
       <form className="create-quiz__form" onSubmit={handleSubmit} noValidate>
 
         {/* ── Мета-данные ─────────────────────────────────────────── */}
         <section className="create-quiz__section">
-          <h2 className="create-quiz__section-title">Основное</h2>
+          <h2 className="create-quiz__section-title">Basics</h2>
 
           <div className="form-field">
             <label className="form-field__label" htmlFor="title">
-              Название <span className="form-field__required">*</span>
+              Name <span className="form-field__required">*</span>
             </label>
             <input
               id="title"
@@ -149,7 +149,7 @@ export default function CreateQuiz() {
               className="form-field__input"
               value={form.title}
               onChange={handleFormChange}
-              placeholder="Например: Казино и азартные игры"
+              placeholder="For example: Casinos and gambling"
               maxLength={100}
               required
             />
@@ -157,7 +157,7 @@ export default function CreateQuiz() {
 
           <div className="form-field">
             <label className="form-field__label" htmlFor="description">
-              Описание
+              Description
             </label>
             <textarea
               id="description"
@@ -165,7 +165,7 @@ export default function CreateQuiz() {
               className="form-field__textarea"
               value={form.description}
               onChange={handleFormChange}
-              placeholder="Краткое описание квиза (опционально)"
+              placeholder="Brief description of the quiz (optional)"
               rows={2}
               maxLength={300}
             />
@@ -174,7 +174,7 @@ export default function CreateQuiz() {
           <div className="form-field-row">
             <div className="form-field">
               <label className="form-field__label" htmlFor="difficulty">
-                Сложность
+                Complexity
               </label>
               <select
                 id="difficulty"
@@ -183,15 +183,15 @@ export default function CreateQuiz() {
                 value={form.difficulty}
                 onChange={handleFormChange}
               >
-                <option value="easy">Лёгкий</option>
-                <option value="medium">Средний</option>
-                <option value="hard">Сложный</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
               </select>
             </div>
 
             <div className="form-field">
               <label className="form-field__label" htmlFor="defaultTimeLimit">
-                Время на вопрос (сек)
+                Time for a question (sec)
               </label>
               <input
                 id="defaultTimeLimit"
@@ -223,14 +223,14 @@ export default function CreateQuiz() {
               className={`mode-tab ${mode === 'json' ? 'mode-tab--active' : ''}`}
               onClick={() => setMode('json')}
             >
-              JSON-импорт
+              JSON-import
             </button>
             <button
               type="button"
               className={`mode-tab ${mode === 'manual' ? 'mode-tab--active' : ''}`}
               onClick={() => setMode('manual')}
             >
-              Вручную
+              Manually
             </button>
           </div>
 
@@ -239,15 +239,15 @@ export default function CreateQuiz() {
             <div className="json-import">
               <div className="json-import__toolbar">
                 <span className="json-import__hint">
-                  Вставьте массив вопросов в формате JSON.{' '}
-                  <code>answers[0]</code> — правильный ответ.
+                  Paste the questions array in JSON format.{' '}
+                  <code>answers[0]</code> — correct answer.
                 </span>
                 <button
                   type="button"
                   className="btn btn--ghost btn--sm"
                   onClick={handleLoadExample}
                 >
-                  Загрузить пример
+                  Load example
                 </button>
               </div>
 
@@ -270,7 +270,7 @@ export default function CreateQuiz() {
 
               {jsonSuccess && (
                 <p className="json-import__success">
-                  ✓ Загружено {questions.length} вопрос(ов)
+                  ✓ Uploaded {questions.length} question(s)
                 </p>
               )}
 
@@ -281,7 +281,7 @@ export default function CreateQuiz() {
                   onClick={handleParseJSON}
                   disabled={isParsing || jsonInput.trim() === ''}
                 >
-                  {isParsing ? 'Парсинг...' : 'Импортировать вопросы'}
+                  {isParsing ? 'Parsing...' : 'Import questions'}
                 </button>
 
                 {jsonInput && (
@@ -290,7 +290,7 @@ export default function CreateQuiz() {
                     className="btn btn--ghost"
                     onClick={handleClearJSON}
                   >
-                    Очистить
+                    Clear
                   </button>
                 )}
               </div>
@@ -300,8 +300,8 @@ export default function CreateQuiz() {
           {/* Ручной режим — заглушка, реализовать в следующей итерации */}
           {mode === 'manual' && (
             <div className="manual-notice">
-              <p>Ручное добавление вопросов — в разработке.</p>
-              <p>Используйте JSON-импорт для быстрого заполнения.</p>
+              <p>Manual addition of questions is in development.</p>
+              <p>Use JSON import for quick populating.</p>
             </div>
           )}
         </section>
@@ -309,7 +309,7 @@ export default function CreateQuiz() {
         {/* ── Превью вопросов ─────────────────────────────────────── */}
         {questions.length > 0 && (
           <section className="create-quiz__section">
-            <h2 className="create-quiz__section-title">Превью вопросов</h2>
+            <h2 className="create-quiz__section-title">Question preview</h2>
             <ul className="question-preview-list">
               {questions.map((q, i) => (
                 <li key={q.id} className="question-preview">
@@ -356,14 +356,14 @@ export default function CreateQuiz() {
             className="btn btn--ghost"
             onClick={() => navigate('/app/quizzes')}
           >
-            Отмена
+            Cancel
           </button>
           <button
             type="submit"
             className="btn btn--primary btn--lg"
             disabled={loading}
           >
-            {loading ? 'Сохранение...' : 'Создать квиз'}
+            {loading ? 'Saving...' : 'Create a quiz'}
           </button>
         </div>
 

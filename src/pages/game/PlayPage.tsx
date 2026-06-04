@@ -1,13 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import Header from '../../components/Header'
 import Question from '../../components/Question'
 import Answers from '../../components/Answers'
-import Sidebar from '../../components/Sidebar'
 import LootboxScreen from '../../components/LootboxScreen'
 import FinalScreen from '../../components/FinalScreen'
 import NextButton from '../../components/NextButton'
-import { useGameSession } from '../../features/gameplay/useGameSession'
+import GameSidebar from '../../components/GameSidebar'
+import { useGameStore, selectCurrentQuestion, selectShuffledAnswers } from '../../features/gameplay/useGameStore'
+import { useSidebarContent } from '../../hooks/useSidebarContent'
 import { quizService } from '../../features/quiz/quizService'
 import type { Quiz } from '../../features/quiz/types'
 
@@ -33,97 +33,88 @@ const FALLBACK_QUIZ: Quiz = {
 
 export default function PlayPage() {
   const { quizId } = useParams<{ quizId?: string }>()
-  const [theme, setTheme] = useState('dark')
-
-  // Загружаем квиз: из localStorage по id или fallback
+ 
   const quiz = useMemo<Quiz>(() => {
-    if (quizId) {
-      return quizService.getById(quizId) ?? FALLBACK_QUIZ
-    }
+    if (quizId) return quizService.getById(quizId) ?? FALLBACK_QUIZ
     return FALLBACK_QUIZ
   }, [quizId])
-
+ 
+  const { initGame, resetGame, next, answer, restart, chestComplete, tick } = useGameStore()
+ 
   const {
-    currentIndex,
-    correctCount,
-    score,
-    selectedAnswer,
-    isFinished,
-    timeLeft,
-    chestPoints,
-    chestsToOpen,
-    isOpeningChest,
-    chestsOpenedToday,
-    shuffledAnswers,
-    currentQuestion,
-    totalQuestions,
-    handleAnswer,
-    handleNext,
-    handleRestart,
-    handleChestComplete,
-  } = useGameSession(quiz)
-
-  function handleThemeToggle(): void {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
-    document.body.setAttribute('data-theme', newTheme)
-  }
-
+    currentIndex, selectedAnswer, isFinished,
+    timeLeft, score, chestsToOpen, isOpeningChest, correctCount,
+  } = useGameStore()
+ 
+  const currentQuestion = useGameStore(selectCurrentQuestion)
+  const shuffledAnswers = useGameStore(selectShuffledAnswers)
+ 
+  // Инициализируем игру при маунте / смене квиза
+  useEffect(() => {
+    initGame(quiz)
+    return () => resetGame()
+  }, [quiz.id]) // eslint-disable-line react-hooks/exhaustive-deps
+ 
+  // Таймер — дёргает tick() каждую секунду
+  useEffect(() => {
+    if (selectedAnswer || isFinished) return
+    const id = setTimeout(tick, 1000)
+    return () => clearTimeout(id)
+  }, [timeLeft, selectedAnswer, isFinished]) // eslint-disable-line react-hooks/exhaustive-deps
+ 
+  // Регистрируем компонент сайдбара — GameSidebar читает стор сам
+  useSidebarContent(GameSidebar)
+ 
+  if (!currentQuestion) return null
+ 
+  const totalQuestions = quiz.questions.length
+ 
   return (
     <>
-      <Header theme={theme} onThemeToggle={handleThemeToggle} />
-      <main className="main">
-        <div className="progress">
-          <span className="progress__label">
-            QUESTION {currentIndex + 1} OF {totalQuestions}
-          </span>
-          <div className="progress__bar">
-            <div
-              className="progress__fill"
-              style={{
-                width: `${
-                  ((selectedAnswer ? currentIndex + 1 : currentIndex) / totalQuestions) * 100
-                }%`,
-              }}
-            />
-          </div>
-        </div>
-
-        {isOpeningChest && chestsToOpen.length > 0 ? (
-          <LootboxScreen chestType={chestsToOpen[0]} onComplete={handleChestComplete} />
-        ) : isFinished ? (
-          <FinalScreen
-            score={score}
-            total={totalQuestions}
-            correctCount={correctCount}
-            onRestart={handleRestart}
+      <div className="progress">
+        <span className="progress__label">
+          QUESTION {currentIndex + 1} OF {totalQuestions}
+        </span>
+        <div className="progress__bar">
+          <div
+            className="progress__fill"
+            style={{
+              width: `${
+                ((selectedAnswer ? currentIndex + 1 : currentIndex) / totalQuestions) * 100
+              }%`,
+            }}
           />
-        ) : (
-          <>
-            <Question
-              text={currentQuestion.text}
-              timeLeft={timeLeft}
-              maxTime={currentQuestion.timeLimit ?? quiz.defaultTimeLimit}
-            />
-            <Answers
-              answers={shuffledAnswers}
-              correctAnswer={currentQuestion.answers[0]}
-              selectedAnswer={selectedAnswer}
-              onAnswer={handleAnswer}
-            />
-            {selectedAnswer && <NextButton onClick={handleNext} />}
-          </>
-        )}
-
-        <footer className="footer">
-          <p>© 2026 Quiz & Poker. All rights reserved.</p>
-        </footer>
-      </main>
-      <Sidebar
-        score={score}
-        chestPoints={chestPoints}
-        chestsOpenedToday={chestsOpenedToday}
-      />
+        </div>
+      </div>
+ 
+      {isOpeningChest && chestsToOpen.length > 0 ? (
+        <LootboxScreen
+          chestType={chestsToOpen[0]}
+          onComplete={chestComplete}
+        />
+      ) : isFinished ? (
+        <FinalScreen
+          score={score}
+          total={totalQuestions}
+          correctCount={correctCount}
+          onRestart={restart}
+        />
+      ) : (
+        <>
+          <Question
+            text={currentQuestion.text}
+            timeLeft={timeLeft}
+            maxTime={currentQuestion.timeLimit ?? quiz.defaultTimeLimit}
+          />
+          <Answers
+            answers={shuffledAnswers}
+            correctAnswer={currentQuestion.answers[0]}
+            selectedAnswer={selectedAnswer}
+            onAnswer={answer}
+          />
+          {selectedAnswer && <NextButton onClick={next} />}
+        </>
+      )}
     </>
   )
 }

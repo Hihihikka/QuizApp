@@ -4,7 +4,7 @@ import { useQuizStore } from '../../features/quiz/useQuizStore'
 import { parseQuestionsJSON, EXAMPLE_QUESTIONS_JSON } from '../../features/quiz/quizParser'
 import type { Question, QuizDifficulty } from '../../features/quiz/types'
 
-// ─── Локальный тип формы ──────────────────────────────────────────────────────
+// ─── Local form type ──────────────────────────────────────────────────────────
 
 interface QuizFormState {
   title: string
@@ -20,11 +20,11 @@ const INITIAL_FORM: QuizFormState = {
   defaultTimeLimit: 15,
 }
 
-// ─── Вкладки режима добавления вопросов ───────────────────────────────────────
+// ─── Question input mode tabs ─────────────────────────────────────────────────
 
 type QuestionInputMode = 'manual' | 'json'
 
-// ─── Компонент ────────────────────────────────────────────────────────────────
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function CreateQuiz() {
   const navigate = useNavigate()
@@ -43,7 +43,7 @@ export default function CreateQuiz() {
   // General form error
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  // ─── Обработчики формы ──────────────────────────────────────────────────────
+  // ─── Form handlers ─────────────────────────────────────────────────────────
 
   function handleFormChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -90,25 +90,25 @@ export default function CreateQuiz() {
     setQuestions([])
   }
 
-  // ─── Удаление отдельного вопроса из превью ───────────────────────────────────
+  // ─── Remove a single question from the preview ─────────────────────────────
 
   function handleRemoveQuestion(id: string) {
     setQuestions(prev => prev.filter(q => q.id !== id))
     if (questions.length <= 1) setJsonSuccess(false)
   }
 
-  // ─── Сабмит ─────────────────────────────────────────────────────────────────
+  // ─── Submit ────────────────────────────────────────────────────────────────
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitError(null)
 
     if (form.title.trim() === '') {
-      setSubmitError('Введите название квиза')
+      setSubmitError('Enter the quiz title')
       return
     }
     if (questions.length === 0) {
-      setSubmitError('Добавьте хотя бы один вопрос')
+      setSubmitError('Add at least one question')
       return
     }
 
@@ -119,11 +119,11 @@ export default function CreateQuiz() {
       })
       navigate(`/app/quizzes/${quiz.id}`)
     } catch {
-      setSubmitError('Не удалось сохранить квиз')
+      setSubmitError('Failed to save quiz')
     }
   }
 
-  // ─── Рендер ──────────────────────────────────────────────────────────────────
+  // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="create-quiz">
@@ -134,7 +134,7 @@ export default function CreateQuiz() {
 
       <form className="create-quiz__form" onSubmit={handleSubmit} noValidate>
 
-        {/* ── Мета-данные ─────────────────────────────────────────── */}
+        {/* ── Metadata ─────────────────────────────────────────────── */}
         <section className="create-quiz__section">
           <h2 className="create-quiz__section-title">Basics</h2>
 
@@ -207,16 +207,16 @@ export default function CreateQuiz() {
           </div>
         </section>
 
-        {/* ── Вопросы ─────────────────────────────────────────────── */}
+        {/* ── Questions ────────────────────────────────────────────── */}
         <section className="create-quiz__section">
           <h2 className="create-quiz__section-title">
-            Вопросы
+            Questions
             {questions.length > 0 && (
               <span className="create-quiz__question-count">{questions.length}</span>
             )}
           </h2>
 
-          {/* Переключатель режима */}
+          {/* Mode switcher */}
           <div className="mode-tabs">
             <button
               type="button"
@@ -234,7 +234,7 @@ export default function CreateQuiz() {
             </button>
           </div>
 
-          {/* JSON режим */}
+          {/* JSON mode */}
           {mode === 'json' && (
             <div className="json-import">
               <div className="json-import__toolbar">
@@ -259,7 +259,7 @@ export default function CreateQuiz() {
                   setJsonError(null)
                   setJsonSuccess(false)
                 }}
-                placeholder={`[\n  {\n    "text": "Вопрос?",\n    "answers": ["ПРАВИЛЬНЫЙ", "НЕВЕРНЫЙ 1", "НЕВЕРНЫЙ 2"],\n    "timeLimit": 15\n  }\n]`}
+                placeholder={`[\n  {\n    "text": "Question?",\n    "answers": ["CORRECT", "WRONG 1", "WRONG 2"],\n    "timeLimit": 15\n  }\n]`}
                 rows={12}
                 spellCheck={false}
               />
@@ -297,7 +297,7 @@ export default function CreateQuiz() {
             </div>
           )}
 
-          {/* Ручной режим — заглушка, реализовать в следующей итерации */}
+          {/* Manual mode placeholder, implement in the next iteration */}
           {mode === 'manual' && (
             <div className="manual-notice">
               <p>Manual addition of questions is in development.</p>
@@ -306,7 +306,7 @@ export default function CreateQuiz() {
           )}
         </section>
 
-        {/* ── Превью вопросов ─────────────────────────────────────── */}
+        {/* ── Question preview ────────────────────────────────────── */}
         {questions.length > 0 && (
           <section className="create-quiz__section">
             <h2 className="create-quiz__section-title">Question preview</h2>
@@ -320,7 +320,7 @@ export default function CreateQuiz() {
                       type="button"
                       className="question-preview__remove"
                       onClick={() => handleRemoveQuestion(q.id)}
-                      title="Удалить вопрос"
+                      title="Remove question"
                     >
                       ✕
                     </button>
@@ -337,7 +337,7 @@ export default function CreateQuiz() {
                     ))}
                   </ul>
                   {q.timeLimit && (
-                    <span className="question-preview__time">⏱ {q.timeLimit}с</span>
+                    <span className="question-preview__time">⏱ {q.timeLimit}s</span>
                   )}
                 </li>
               ))}
@@ -345,7 +345,7 @@ export default function CreateQuiz() {
           </section>
         )}
 
-        {/* ── Ошибка и кнопка сохранения ──────────────────────────── */}
+        {/* ── Error and save button ───────────────────────────────── */}
         {submitError && (
           <p className="create-quiz__submit-error">⚠ {submitError}</p>
         )}

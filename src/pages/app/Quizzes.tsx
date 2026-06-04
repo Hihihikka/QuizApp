@@ -6,7 +6,7 @@ export default function Quizzes() {
   const { quizzes, deleteQuiz, loading } = useQuizStore()
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить квиз?')) return
+    if (!confirm('Delete quiz?')) return
     await deleteQuiz(id)
   }
 
@@ -24,12 +24,12 @@ export default function Quizzes() {
 
       {quizzes.length === 0 ? (
         <div className="quizzes-page__empty">
-          <p>Квизов пока нет.</p>
+          <p>No quizzes yet.</p>
           <button
             className="btn btn--primary"
             onClick={() => navigate('/app/quizzes/create')}
           >
-            Создать первый квиз
+            Create first quiz
           </button>
         </div>
       ) : (
@@ -42,9 +42,9 @@ export default function Quizzes() {
                   <p className="quiz-card__description">{quiz.description}</p>
                 )}
                 <div className="quiz-card__meta">
-                  <span>{quiz.questions.length} вопр.</span>
+                  <span>{quiz.questions.length} questions</span>
                   <span>{quiz.difficulty}</span>
-                  <span>{quiz.defaultTimeLimit}с/вопрос</span>
+                  <span>{quiz.defaultTimeLimit}s/question</span>
                 </div>
               </div>
               <div className="quiz-card__actions">
@@ -52,20 +52,20 @@ export default function Quizzes() {
                   className="btn btn--primary btn--sm"
                   onClick={() => navigate(`/play/${quiz.id}`)}
                 >
-                  Играть
+                  Play
                 </button>
                 <button
                   className="btn btn--ghost btn--sm"
                   onClick={() => navigate(`/app/quizzes/${quiz.id}/edit`)}
                 >
-                  Изменить
+                  Edit
                 </button>
                 <button
                   className="btn btn--danger btn--sm"
                   onClick={() => handleDelete(quiz.id)}
                   disabled={loading}
                 >
-                  Удалить
+                  Delete
                 </button>
               </div>
             </li>

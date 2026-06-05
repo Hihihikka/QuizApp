@@ -2,9 +2,9 @@ import { createBrowserRouter } from 'react-router-dom'
 import { SidebarProvider } from '../providers/SidebarProvider'
 import RootLayout from '../layouts/RootLayout'
 import ProtectedRoute from './ProtectedRoute'
-import PlayPage from '../pages/game/PlayPage'
-import CreateQuiz from '../pages/app/CreateQuiz'
-import Quizzes from '../pages/app/Quizzes'
+import PlayPage from '../features/gameplay/pages/PlayPage'
+import CreateQuiz from '../features/quiz/pages/CreateQuiz'
+import Quizzes from '../features/quiz/pages/Quizzes'
 
 export const router = createBrowserRouter([
   {

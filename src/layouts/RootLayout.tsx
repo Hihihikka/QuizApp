@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { useState } from 'react'
 import Header from '../components/Header'
 import { useSidebar } from '../hooks/useSidebar'
+import s from './RootLayout.module.css'
 
 export default function RootLayout() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -16,9 +17,9 @@ export default function RootLayout() {
   return (
     <>
       <Header theme={theme} onThemeToggle={handleThemeToggle} />
-      <main className="main">
+      <main className={s.main}>
         <Outlet />
-        <footer className="footer">
+        <footer className={s.footer}>
           <p>© 2026 Quiz &amp; Poker. All rights reserved.</p>
         </footer>
       </main>

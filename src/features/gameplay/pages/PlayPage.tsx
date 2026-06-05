@@ -1,19 +1,20 @@
 import { useMemo, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import Question from '../../components/Question'
-import Answers from '../../components/Answers'
-import LootboxScreen from '../../components/LootboxScreen'
-import FinalScreen from '../../components/FinalScreen'
-import NextButton from '../../components/NextButton'
-import GameSidebar from '../../components/GameSidebar'
-import { useGameStore, selectCurrentQuestion, selectShuffledAnswers } from '../../features/gameplay/useGameStore'
-import { useSidebarContent } from '../../hooks/useSidebarContent'
-import { quizService } from '../../features/quiz/quizService'
-import type { Quiz } from '../../features/quiz/types'
+import ProgressBar from '../components/ProgressBar'
+import Question from '../components/Question'
+import Answers from '../components/Answers'
+import LootboxScreen from '../components/LootboxScreen'
+import FinalScreen from '../components/FinalScreen'
+import NextButton from '../components/NextButton'
+import GameSidebar from '../../../components/GameSidebar'
+import { useGameStore, selectCurrentQuestion, selectShuffledAnswers } from '../useGameStore'
+import { useSidebarContent } from '../../../hooks/useSidebarContent'
+import { quizService } from '../../quiz/quizService'
+import type { Quiz } from '../../quiz/types'
 
 // ─── Временный fallback-квиз из статичных данных ──────────────────────────────
 // Удалить после подключения реального CRUD
-import { questions as staticQuestions, QUESTION_TIME } from '../../data/questions'
+import { questions as staticQuestions, QUESTION_TIME } from '../../../data/questions'
 
 const FALLBACK_QUIZ: Quiz = {
   id: 'static-fallback',
@@ -71,21 +72,11 @@ export default function PlayPage() {
  
   return (
     <>
-      <div className="progress">
-        <span className="progress__label">
-          QUESTION {currentIndex + 1} OF {totalQuestions}
-        </span>
-        <div className="progress__bar">
-          <div
-            className="progress__fill"
-            style={{
-              width: `${
-                ((selectedAnswer ? currentIndex + 1 : currentIndex) / totalQuestions) * 100
-              }%`,
-            }}
-          />
-        </div>
-      </div>
+      <ProgressBar
+        current={currentIndex + 1}
+        total={totalQuestions}
+        filled={selectedAnswer ? (currentIndex + 1) / totalQuestions : currentIndex / totalQuestions}
+      />
  
       {isOpeningChest && chestsToOpen.length > 0 ? (
         <LootboxScreen

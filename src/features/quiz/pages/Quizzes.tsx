@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useQuizStore } from '../../features/quiz/useQuizStore'
+import { useQuizStore } from '../useQuizStore'
 
 export default function Quizzes() {
   const navigate = useNavigate()

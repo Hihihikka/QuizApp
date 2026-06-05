@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuizStore } from '../../features/quiz/useQuizStore'
-import { parseQuestionsJSON, EXAMPLE_QUESTIONS_JSON } from '../../features/quiz/quizParser'
-import type { Question, QuizDifficulty } from '../../features/quiz/types'
+import { useQuizStore } from '../useQuizStore'
+import { parseQuestionsJSON, EXAMPLE_QUESTIONS_JSON } from '../quizParser'
+import type { Question, QuizDifficulty } from '../types'
 
 // ─── Local form type ──────────────────────────────────────────────────────────
 

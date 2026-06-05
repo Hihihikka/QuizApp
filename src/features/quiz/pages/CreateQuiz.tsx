@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuizStore } from '../useQuizStore'
 import { parseQuestionsJSON, EXAMPLE_QUESTIONS_JSON } from '../quizParser'
 import type { Question, QuizDifficulty } from '../types'
+import styles from './CreateQuiz.module.css'
 
 // ─── Local form type ──────────────────────────────────────────────────────────
 
@@ -113,10 +114,7 @@ export default function CreateQuiz() {
     }
 
     try {
-      const quiz = await createQuiz({
-        ...form,
-        questions,
-      })
+      const quiz = await createQuiz({ ...form, questions })
       navigate(`/app/quizzes/${quiz.id}`)
     } catch {
       setSubmitError('Failed to save quiz')
@@ -126,27 +124,27 @@ export default function CreateQuiz() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="create-quiz">
-      <div className="create-quiz__header">
-        <h1 className="create-quiz__title">New quiz</h1>
-        <p className="create-quiz__subtitle">Fill in data and add questions</p>
+    <div className={styles.createQuiz}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>New quiz</h1>
+        <p className={styles.subtitle}>Fill in data and add questions</p>
       </div>
 
-      <form className="create-quiz__form" onSubmit={handleSubmit} noValidate>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
 
         {/* ── Metadata ─────────────────────────────────────────────── */}
-        <section className="create-quiz__section">
-          <h2 className="create-quiz__section-title">Basics</h2>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Basics</h2>
 
-          <div className="form-field">
-            <label className="form-field__label" htmlFor="title">
-              Name <span className="form-field__required">*</span>
+          <div className={styles.formField}>
+            <label className={styles.label} htmlFor="title">
+              Name <span className={styles.required}>*</span>
             </label>
             <input
               id="title"
               name="title"
               type="text"
-              className="form-field__input"
+              className={styles.input}
               value={form.title}
               onChange={handleFormChange}
               placeholder="For example: Casinos and gambling"
@@ -155,14 +153,14 @@ export default function CreateQuiz() {
             />
           </div>
 
-          <div className="form-field">
-            <label className="form-field__label" htmlFor="description">
+          <div className={styles.formField}>
+            <label className={styles.label} htmlFor="description">
               Description
             </label>
             <textarea
               id="description"
               name="description"
-              className="form-field__textarea"
+              className={styles.textarea}
               value={form.description}
               onChange={handleFormChange}
               placeholder="Brief description of the quiz (optional)"
@@ -171,15 +169,15 @@ export default function CreateQuiz() {
             />
           </div>
 
-          <div className="form-field-row">
-            <div className="form-field">
-              <label className="form-field__label" htmlFor="difficulty">
+          <div className={styles.formFieldRow}>
+            <div className={styles.formField}>
+              <label className={styles.label} htmlFor="difficulty">
                 Complexity
               </label>
               <select
                 id="difficulty"
                 name="difficulty"
-                className="form-field__select"
+                className={styles.select}
                 value={form.difficulty}
                 onChange={handleFormChange}
               >
@@ -189,15 +187,15 @@ export default function CreateQuiz() {
               </select>
             </div>
 
-            <div className="form-field">
-              <label className="form-field__label" htmlFor="defaultTimeLimit">
+            <div className={styles.formField}>
+              <label className={styles.label} htmlFor="defaultTimeLimit">
                 Time for a question (sec)
               </label>
               <input
                 id="defaultTimeLimit"
                 name="defaultTimeLimit"
                 type="number"
-                className="form-field__input"
+                className={styles.input}
                 value={form.defaultTimeLimit}
                 onChange={handleFormChange}
                 min={5}
@@ -208,26 +206,26 @@ export default function CreateQuiz() {
         </section>
 
         {/* ── Questions ────────────────────────────────────────────── */}
-        <section className="create-quiz__section">
-          <h2 className="create-quiz__section-title">
+        <section className={`${styles.section} ${styles.sectionGap}`}>
+          <h2 className={styles.sectionTitle}>
             Questions
             {questions.length > 0 && (
-              <span className="create-quiz__question-count">{questions.length}</span>
+              <span className={styles.questionCount}>{questions.length}</span>
             )}
           </h2>
 
           {/* Mode switcher */}
-          <div className="mode-tabs">
+          <div className={styles.modeTabs}>
             <button
               type="button"
-              className={`mode-tab ${mode === 'json' ? 'mode-tab--active' : ''}`}
+              className={`${styles.modeTab} ${mode === 'json' ? styles.modeTabActive : ''}`}
               onClick={() => setMode('json')}
             >
               JSON-import
             </button>
             <button
               type="button"
-              className={`mode-tab ${mode === 'manual' ? 'mode-tab--active' : ''}`}
+              className={`${styles.modeTab} ${mode === 'manual' ? styles.modeTabActive : ''}`}
               onClick={() => setMode('manual')}
             >
               Manually
@@ -236,15 +234,15 @@ export default function CreateQuiz() {
 
           {/* JSON mode */}
           {mode === 'json' && (
-            <div className="json-import">
-              <div className="json-import__toolbar">
-                <span className="json-import__hint">
+            <div className={styles.jsonImport}>
+              <div className={styles.jsonToolbar}>
+                <span className={styles.jsonHint}>
                   Paste the questions array in JSON format.{' '}
                   <code>answers[0]</code> — correct answer.
                 </span>
                 <button
                   type="button"
-                  className="btn btn--ghost btn--sm"
+                  className={`${styles.btn} ${styles.btnSm}`}
                   onClick={handleLoadExample}
                 >
                   Load example
@@ -252,7 +250,11 @@ export default function CreateQuiz() {
               </div>
 
               <textarea
-                className={`json-import__textarea ${jsonError ? 'json-import__textarea--error' : ''} ${jsonSuccess ? 'json-import__textarea--success' : ''}`}
+                className={[
+                  styles.jsonTextarea,
+                  jsonError ? styles.jsonTextareaError : '',
+                  jsonSuccess ? styles.jsonTextareaSuccess : '',
+                ].join(' ')}
                 value={jsonInput}
                 onChange={e => {
                   setJsonInput(e.target.value)
@@ -265,19 +267,19 @@ export default function CreateQuiz() {
               />
 
               {jsonError && (
-                <p className="json-import__error">⚠ {jsonError}</p>
+                <p className={styles.jsonError}>⚠ {jsonError}</p>
               )}
 
               {jsonSuccess && (
-                <p className="json-import__success">
+                <p className={styles.jsonSuccess}>
                   ✓ Uploaded {questions.length} question(s)
                 </p>
               )}
 
-              <div className="json-import__actions">
+              <div className={styles.jsonActions}>
                 <button
                   type="button"
-                  className="btn btn--primary"
+                  className={`${styles.btn} ${styles.btnPrimary}`}
                   onClick={handleParseJSON}
                   disabled={isParsing || jsonInput.trim() === ''}
                 >
@@ -287,7 +289,7 @@ export default function CreateQuiz() {
                 {jsonInput && (
                   <button
                     type="button"
-                    className="btn btn--ghost"
+                    className={styles.btn}
                     onClick={handleClearJSON}
                   >
                     Clear
@@ -297,9 +299,9 @@ export default function CreateQuiz() {
             </div>
           )}
 
-          {/* Manual mode placeholder, implement in the next iteration */}
+          {/* Manual mode placeholder */}
           {mode === 'manual' && (
-            <div className="manual-notice">
+            <div className={styles.manualNotice}>
               <p>Manual addition of questions is in development.</p>
               <p>Use JSON import for quick populating.</p>
             </div>
@@ -308,36 +310,38 @@ export default function CreateQuiz() {
 
         {/* ── Question preview ────────────────────────────────────── */}
         {questions.length > 0 && (
-          <section className="create-quiz__section">
-            <h2 className="create-quiz__section-title">Question preview</h2>
-            <ul className="question-preview-list">
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Question preview</h2>
+            <ul className={styles.questionPreviewList}>
               {questions.map((q, i) => (
-                <li key={q.id} className="question-preview">
-                  <div className="question-preview__header">
-                    <span className="question-preview__index">#{i + 1}</span>
-                    <span className="question-preview__text">{q.text}</span>
+                <li key={q.id} className={styles.questionPreview}>
+                  <div className={styles.questionPreviewHeader}>
+                    <span className={styles.questionIndex}>#{i + 1}</span>
+                    <span className={styles.questionText}>{q.text}</span>
                     <button
                       type="button"
-                      className="question-preview__remove"
+                      className={styles.questionRemove}
                       onClick={() => handleRemoveQuestion(q.id)}
                       title="Remove question"
                     >
                       ✕
                     </button>
                   </div>
-                  <ul className="question-preview__answers">
+                  <ul className={styles.questionAnswers}>
                     {q.answers.map((a, ai) => (
                       <li
                         key={ai}
-                        className={`question-preview__answer ${ai === 0 ? 'question-preview__answer--correct' : ''}`}
+                        className={`${styles.questionAnswer} ${ai === 0 ? styles.questionAnswerCorrect : ''}`}
                       >
-                        {ai === 0 && <span className="question-preview__correct-mark">✓</span>}
+                        {ai === 0 && (
+                          <span className={styles.questionCorrectMark}>✓</span>
+                        )}
                         {a}
                       </li>
                     ))}
                   </ul>
                   {q.timeLimit && (
-                    <span className="question-preview__time">⏱ {q.timeLimit}s</span>
+                    <span className={styles.questionTime}>⏱ {q.timeLimit}s</span>
                   )}
                 </li>
               ))}
@@ -347,20 +351,20 @@ export default function CreateQuiz() {
 
         {/* ── Error and save button ───────────────────────────────── */}
         {submitError && (
-          <p className="create-quiz__submit-error">⚠ {submitError}</p>
+          <p className={styles.submitError} style={{ marginTop: 16 }}>⚠ {submitError}</p>
         )}
 
-        <div className="create-quiz__footer">
+        <div className={styles.footer} style={{ marginTop: 24 }}>
           <button
             type="button"
-            className="btn btn--ghost"
+            className={styles.btn}
             onClick={() => navigate('/app/quizzes')}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="btn btn--primary btn--lg"
+            className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLg}`}
             disabled={loading}
           >
             {loading ? 'Saving...' : 'Create a quiz'}

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useQuizStore } from '../useQuizStore'
+import styles from './Quizzes.module.css'
 
 export default function Quizzes() {
   const navigate = useNavigate()
@@ -11,11 +12,11 @@ export default function Quizzes() {
   }
 
   return (
-    <div className="quizzes-page">
-      <div className="quizzes-page__header">
-        <h1>My quizzes</h1>
+    <div className={styles.quizzesPage}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>My quizzes</h1>
         <button
-          className="btn btn--primary"
+          className={`${styles.btn} ${styles.btnPrimary}`}
           onClick={() => navigate('/app/quizzes/create')}
         >
           + Create quiz
@@ -23,45 +24,45 @@ export default function Quizzes() {
       </div>
 
       {quizzes.length === 0 ? (
-        <div className="quizzes-page__empty">
+        <div className={styles.empty}>
           <p>No quizzes yet.</p>
           <button
-            className="btn btn--primary"
+            className={`${styles.btn} ${styles.btnPrimary}`}
             onClick={() => navigate('/app/quizzes/create')}
           >
             Create first quiz
           </button>
         </div>
       ) : (
-        <ul className="quiz-list">
+        <ul className={styles.list}>
           {quizzes.map(quiz => (
-            <li key={quiz.id} className="quiz-card">
-              <div className="quiz-card__info">
-                <h2 className="quiz-card__title">{quiz.title}</h2>
+            <li key={quiz.id} className={styles.card}>
+              <div className={styles.cardInfo}>
+                <h2 className={styles.cardTitle}>{quiz.title}</h2>
                 {quiz.description && (
-                  <p className="quiz-card__description">{quiz.description}</p>
+                  <p className={styles.cardDescription}>{quiz.description}</p>
                 )}
-                <div className="quiz-card__meta">
+                <div className={styles.cardMeta}>
                   <span>{quiz.questions.length} questions</span>
                   <span>{quiz.difficulty}</span>
-                  <span>{quiz.defaultTimeLimit}s/question</span>
+                  <span>{quiz.defaultTimeLimit}s / question</span>
                 </div>
               </div>
-              <div className="quiz-card__actions">
+              <div className={styles.cardActions}>
                 <button
-                  className="btn btn--primary btn--sm"
+                  className={`${styles.btn} ${styles.btnPrimary}`}
                   onClick={() => navigate(`/play/${quiz.id}`)}
                 >
                   Play
                 </button>
                 <button
-                  className="btn btn--ghost btn--sm"
+                  className={styles.btn}
                   onClick={() => navigate(`/app/quizzes/${quiz.id}/edit`)}
                 >
                   Edit
                 </button>
                 <button
-                  className="btn btn--danger btn--sm"
+                  className={`${styles.btn} ${styles.btnDanger}`}
                   onClick={() => handleDelete(quiz.id)}
                   disabled={loading}
                 >

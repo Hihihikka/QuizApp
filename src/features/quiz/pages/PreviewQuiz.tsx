@@ -5,9 +5,8 @@ import type { QuizDifficulty } from '../types'
 import Button from '../../../components/ui/Button'
 import QuizFormSection from '../components/QuizFormSection'
 import QuestionPreviewList from '../components/QuestionPreviewList'
+import layout from './quizPageLayout.module.css'
 import styles from './PreviewQuiz.module.css'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const DIFFICULTY_LABEL: Record<QuizDifficulty, string> = {
   easy: 'Easy',
@@ -21,8 +20,6 @@ const DIFFICULTY_DOT: Record<QuizDifficulty, string> = {
   hard: styles.dotHard,
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export default function PreviewQuiz() {
   const { quizId } = useParams<{ quizId: string }>()
   const navigate = useNavigate()
@@ -34,14 +31,14 @@ export default function PreviewQuiz() {
 
   if (!quiz) {
     return (
-      <div className={styles.page}>
-        <div className={styles.pageHeader}>
-          <h1 className={styles.title}>Quiz not found</h1>
-          <p className={styles.description}>
+      <div className={layout.page}>
+        <div className={layout.pageHeader}>
+          <h1 className={layout.title}>Quiz not found</h1>
+          <p className={layout.description}>
             This quiz doesn't exist or has been deleted.
           </p>
         </div>
-        <div className={styles.footer}>
+        <div className={layout.footer}>
           <Button type="button" onClick={() => navigate('/app/quizzes')}>
             Back to quizzes
           </Button>
@@ -51,13 +48,12 @@ export default function PreviewQuiz() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className={layout.page}>
 
-      {/* ── Header (fixed) ──────────────────────────────────────────────── */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.title}>{quiz.title}</h1>
+      <div className={layout.pageHeader}>
+        <h1 className={layout.title}>{quiz.title}</h1>
         {quiz.description && (
-          <p className={styles.description}>{quiz.description}</p>
+          <p className={layout.description}>{quiz.description}</p>
         )}
         <div className={styles.meta}>
           <span className={`${styles.metaBadge} ${styles.metaBadgeHighlight}`}>
@@ -73,7 +69,6 @@ export default function PreviewQuiz() {
         </div>
       </div>
 
-      {/* ── Questions (scrollable) ───────────────────────────────────────── */}
       <div className={styles.questionsWrap}>
         <QuizFormSection
           title="Questions"
@@ -83,12 +78,11 @@ export default function PreviewQuiz() {
         </QuizFormSection>
       </div>
 
-      {/* ── Actions (fixed) ─────────────────────────────────────────────── */}
-      <div className={styles.footer}>
+      <div className={layout.footer}>
         <Button type="button" onClick={() => navigate('/app/quizzes')}>
           Back
         </Button>
-        <div className={styles.footerSpacer} />
+        <div className={layout.footerSpacer} />
         <Button
           type="button"
           onClick={() => navigate(`/app/quizzes/${quiz.id}/edit`)}

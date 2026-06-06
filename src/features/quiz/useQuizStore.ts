@@ -3,11 +3,11 @@ import { quizService } from './quizService'
 import type { Quiz, CreateQuizDTO, UpdateQuizDTO } from './types'
 
 /**
- * Хук-обёртка над quizService для React-компонентов.
- * Хранит список квизов в локальном стейте и синхронизирует с localStorage.
+ * Hook wrapper around quizService for React components.
+ * Stores the quiz list in local state and syncs it with localStorage.
  *
- * В будущем: заменить тело функций на fetch-вызовы к API —
- * интерфейс хука при этом не изменится, компоненты не сломаются.
+ * Later: replace function bodies with fetch calls to the API.
+ * The hook interface will stay the same, so components will not break.
  */
 export function useQuizStore() {
   const [quizzes, setQuizzes] = useState<Quiz[]>(() => quizService.getAll())
@@ -23,12 +23,12 @@ export function useQuizStore() {
       setLoading(true)
       setError(null)
       try {
-        // async/await готов к замене на fetch()
+        // async/await is ready to be replaced with fetch()
         const quiz = await Promise.resolve(quizService.create(dto))
         setQuizzes(prev => [...prev, quiz])
         return quiz
       } catch (e) {
-        const msg = e instanceof Error ? e.message : 'Ошибка создания квиза'
+        const msg = e instanceof Error ? e.message : 'Failed to create quiz'
         setError(msg)
         throw e
       } finally {
@@ -47,7 +47,7 @@ export function useQuizStore() {
         setQuizzes(prev => prev.map(q => (q.id === id ? updated : q)))
         return updated
       } catch (e) {
-        const msg = e instanceof Error ? e.message : 'Ошибка обновления квиза'
+        const msg = e instanceof Error ? e.message : 'Failed to update quiz'
         setError(msg)
         throw e
       } finally {
@@ -64,7 +64,7 @@ export function useQuizStore() {
       await Promise.resolve(quizService.delete(id))
       setQuizzes(prev => prev.filter(q => q.id !== id))
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Ошибка удаления квиза'
+      const msg = e instanceof Error ? e.message : 'Failed to delete quiz'
       setError(msg)
       throw e
     } finally {

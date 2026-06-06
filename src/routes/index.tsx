@@ -17,7 +17,6 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: '/', element: <Quizzes /> },
-      { path: '/play', element: <PlayPage /> },
       { path: '/play/:quizId', element: <PlayPage /> },
       {
         element: <ProtectedRoute />,

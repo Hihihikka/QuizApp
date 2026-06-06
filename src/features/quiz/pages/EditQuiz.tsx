@@ -1,14 +1,12 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuizStore } from '../useQuizStore'
-import { quizService } from '../quizService'
-import type { Question } from '../types'
+import { useQuizForm } from '../useQuizForm'
 import Button from '../../../components/ui/Button'
 import QuizFormSection from '../components/QuizFormSection'
 import QuizMetaFields from '../components/QuizMetaFields'
-import type { QuizMetaValues } from '../components/QuizMetaFields'
 import JsonImportSection from '../components/JsonImportSection'
 import QuestionPreviewList from '../components/QuestionPreviewList'
+import layout from './quizPageLayout.module.css'
 import styles from './quizForm.module.css'
 
 type QuestionInputMode = 'manual' | 'json'
@@ -16,88 +14,32 @@ type QuestionInputMode = 'manual' | 'json'
 export default function EditQuiz() {
   const { quizId } = useParams<{ quizId: string }>()
   const navigate = useNavigate()
-  const { updateQuiz, deleteQuiz, loading } = useQuizStore()
-
-  const existingQuiz = useMemo(
-    () => (quizId ? quizService.getById(quizId) : undefined),
-    [quizId]
-  )
-
-  const [form, setForm] = useState<QuizMetaValues>(() => ({
-    title: existingQuiz?.title ?? '',
-    description: existingQuiz?.description ?? '',
-    difficulty: existingQuiz?.difficulty ?? 'medium',
-    defaultTimeLimit: existingQuiz?.defaultTimeLimit ?? 15,
-  }))
-  const [questions, setQuestions] = useState<Question[]>(
-    () => existingQuiz?.questions ?? []
-  )
   const [mode, setMode] = useState<QuestionInputMode>('json')
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState(false)
 
-  function handleFormChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) {
-    const { name, value } = e.target
-    setForm(prev => ({
-      ...prev,
-      [name]: name === 'defaultTimeLimit' ? Number(value) : value,
-    }))
-  }
-
-  function handleImport(imported: Question[]) {
-    setQuestions(prev => [...prev, ...imported])
-  }
-
-  function handleRemoveQuestion(id: string) {
-    setQuestions(prev => prev.filter(q => q.id !== id))
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSubmitError(null)
-
-    if (form.title.trim() === '') {
-      setSubmitError('Enter the quiz title')
-      return
-    }
-    if (questions.length === 0) {
-      setSubmitError('Add at least one question')
-      return
-    }
-
-    try {
-      await updateQuiz(quizId!, { ...form, questions })
-      navigate('/app/quizzes')
-    } catch {
-      setSubmitError('Failed to save changes')
-    }
-  }
-
-  async function handleDelete() {
-    if (!confirmDelete) {
-      setConfirmDelete(true)
-      return
-    }
-    try {
-      await deleteQuiz(quizId!)
-      navigate('/app/quizzes')
-    } catch {
-      setSubmitError('Failed to delete quiz')
-    }
-  }
+  const {
+    form,
+    questions,
+    existingQuiz,
+    loading,
+    submitError,
+    confirmDelete,
+    handleFormChange,
+    handleImport,
+    handleRemoveQuestion,
+    handleSubmit,
+    handleDelete,
+  } = useQuizForm({ quizId })
 
   if (!existingQuiz) {
     return (
-      <div className={styles.quizPage}>
-        <div className={styles.pageHeader}>
-          <h1 className={styles.title}>Quiz not found</h1>
-          <p className={styles.subtitle}>
+      <div className={layout.page}>
+        <div className={layout.pageHeader}>
+          <h1 className={layout.title}>Quiz not found</h1>
+          <p className={layout.subtitle}>
             The quiz you're looking for doesn't exist or has been deleted.
           </p>
         </div>
-        <div className={styles.formFooter}>
+        <div className={layout.footer}>
           <Button type="button" onClick={() => navigate('/app/quizzes')}>
             Back to quizzes
           </Button>
@@ -107,15 +49,13 @@ export default function EditQuiz() {
   }
 
   return (
-    <div className={styles.quizPage}>
+    <div className={layout.page}>
 
-      {/* Fixed header */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.title}>Edit quiz</h1>
-        <p className={styles.subtitle}>Update questions or quiz settings</p>
+      <div className={layout.pageHeader}>
+        <h1 className={layout.title}>Edit quiz</h1>
+        <p className={layout.subtitle}>Update questions or quiz settings</p>
       </div>
 
-      {/* Scrollable form content */}
       <form id="quiz-form" className={styles.form} onSubmit={handleSubmit} noValidate>
 
         <QuizFormSection title="Basics">
@@ -170,8 +110,7 @@ export default function EditQuiz() {
 
       </form>
 
-      {/* Fixed footer — outside scroll area */}
-      <div className={styles.formFooter}>
+      <div className={layout.footer}>
         <Button
           variant="danger"
           type="button"
@@ -180,7 +119,7 @@ export default function EditQuiz() {
         >
           {confirmDelete ? 'Confirm delete' : 'Delete quiz'}
         </Button>
-        <div className={styles.footerSpacer} />
+        <div className={layout.footerSpacer} />
         {submitError && (
           <p className={styles.submitError}>⚠ {submitError}</p>
         )}

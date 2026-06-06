@@ -1,82 +1,39 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuizStore } from '../useQuizStore'
-import type { Question, QuizDifficulty } from '../types'
+import { useQuizForm } from '../useQuizForm'
 import Button from '../../../components/ui/Button'
 import QuizFormSection from '../components/QuizFormSection'
 import QuizMetaFields from '../components/QuizMetaFields'
-import type { QuizMetaValues } from '../components/QuizMetaFields'
 import JsonImportSection from '../components/JsonImportSection'
 import QuestionPreviewList from '../components/QuestionPreviewList'
+import layout from './quizPageLayout.module.css'
 import styles from './quizForm.module.css'
 
 type QuestionInputMode = 'manual' | 'json'
 
-const INITIAL_FORM: QuizMetaValues = {
-  title: '',
-  description: '',
-  difficulty: 'medium' as QuizDifficulty,
-  defaultTimeLimit: 15,
-}
-
 export default function CreateQuiz() {
   const navigate = useNavigate()
-  const { createQuiz, loading } = useQuizStore()
-
-  const [form, setForm] = useState<QuizMetaValues>(INITIAL_FORM)
-  const [questions, setQuestions] = useState<Question[]>([])
   const [mode, setMode] = useState<QuestionInputMode>('json')
-  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  function handleFormChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) {
-    const { name, value } = e.target
-    setForm(prev => ({
-      ...prev,
-      [name]: name === 'defaultTimeLimit' ? Number(value) : value,
-    }))
-  }
-
-  function handleImport(imported: Question[]) {
-    setQuestions(imported)
-  }
-
-  function handleRemoveQuestion(id: string) {
-    setQuestions(prev => prev.filter(q => q.id !== id))
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSubmitError(null)
-
-    if (form.title.trim() === '') {
-      setSubmitError('Enter the quiz title')
-      return
-    }
-    if (questions.length === 0) {
-      setSubmitError('Add at least one question')
-      return
-    }
-
-    try {
-      const quiz = await createQuiz({ ...form, questions })
-      navigate(`/app/quizzes/${quiz.id}/preview`)
-    } catch {
-      setSubmitError('Failed to save quiz')
-    }
-  }
+  const {
+    form,
+    questions,
+    loading,
+    submitError,
+    handleFormChange,
+    handleImport,
+    handleRemoveQuestion,
+    handleSubmit,
+  } = useQuizForm()
 
   return (
-    <div className={styles.quizPage}>
+    <div className={layout.page}>
 
-      {/* Fixed header */}
-      <div className={styles.pageHeader}>
-        <h1 className={styles.title}>New quiz</h1>
-        <p className={styles.subtitle}>Fill in data and add questions</p>
+      <div className={layout.pageHeader}>
+        <h1 className={layout.title}>New quiz</h1>
+        <p className={layout.subtitle}>Fill in data and add questions</p>
       </div>
 
-      {/* Scrollable form content — id ties submit button outside */}
       <form id="quiz-form" className={styles.form} onSubmit={handleSubmit} noValidate>
 
         <QuizFormSection title="Basics">
@@ -127,16 +84,14 @@ export default function CreateQuiz() {
 
       </form>
 
-      {/* Fixed footer — outside scroll area */}
-      <div className={styles.formFooter}>
+      <div className={layout.footer}>
         {submitError && (
           <p className={styles.submitError}>⚠ {submitError}</p>
         )}
-        <div className={styles.footerSpacer} />
+        <div className={layout.footerSpacer} />
         <Button type="button" onClick={() => navigate('/app/quizzes')}>
           Cancel
         </Button>
-        {/* form= attribute links this button to the form above */}
         <Button variant="primary" size="lg" type="submit" form="quiz-form" disabled={loading}>
           {loading ? 'Saving...' : 'Create a quiz'}
         </Button>

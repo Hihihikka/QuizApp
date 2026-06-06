@@ -26,7 +26,7 @@ interface GameActions {
   next: () => void
   restart: () => void
   chestComplete: () => void
-  tick: () => void       // вызывается таймером каждую секунду
+  tick: () => void
   resetGame: () => void  // при уходе со страницы
 }
 
@@ -180,6 +180,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     if (selectedAnswer || isFinished) return
 
     if (timeLeft <= 1) {
+      set({ timeLeft: 0 })
       get().answer('__timeout__')
     } else {
       set({ timeLeft: timeLeft - 1 })

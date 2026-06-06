@@ -1,5 +1,5 @@
-import { useMemo, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import ProgressBar from '../components/ProgressBar'
 import Question from '../components/Question'
 import Answers from '../components/Answers'
@@ -12,64 +12,58 @@ import { useSidebarContent } from '../../../hooks/useSidebarContent'
 import { quizService } from '../../quiz/quizService'
 import type { Quiz } from '../../quiz/types'
 
-// ─── Временный fallback-квиз из статичных данных ──────────────────────────────
-// Удалить после подключения реального CRUD
-import { questions as staticQuestions, QUESTION_TIME } from '../../../data/questions'
-
-const FALLBACK_QUIZ: Quiz = {
-  id: 'static-fallback',
-  title: 'Demo Quiz',
-  difficulty: 'medium',
-  defaultTimeLimit: QUESTION_TIME,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  questions: staticQuestions.map((q, i) => ({
-    id: `static-${i}`,
-    text: q.text,
-    answers: q.answers as [string, ...string[]],
-  })),
-}
-
-// ─── Компонент ────────────────────────────────────────────────────────────────
-
 export default function PlayPage() {
   const { quizId } = useParams<{ quizId?: string }>()
- 
-  const quiz = useMemo<Quiz>(() => {
-    if (quizId) return quizService.getById(quizId) ?? FALLBACK_QUIZ
-    return FALLBACK_QUIZ
+  const navigate = useNavigate()
+
+  const quiz = useMemo<Quiz | null>(() => {
+    if (!quizId) return null
+    return quizService.getById(quizId) ?? null
   }, [quizId])
- 
+
   const { initGame, resetGame, next, answer, restart, chestComplete, tick } = useGameStore()
- 
+
   const {
     currentIndex, selectedAnswer, isFinished,
     timeLeft, score, chestsToOpen, isOpeningChest, correctCount,
   } = useGameStore()
- 
+
   const currentQuestion = useGameStore(selectCurrentQuestion)
   const shuffledAnswers = useGameStore(selectShuffledAnswers)
- 
-  // Инициализируем игру при маунте / смене квиза
+
   useEffect(() => {
+    if (!quiz) {
+      resetGame()
+      return
+    }
+
     initGame(quiz)
     return () => resetGame()
-  }, [quiz.id]) // eslint-disable-line react-hooks/exhaustive-deps
- 
-  // Таймер — дёргает tick() каждую секунду
+  }, [quiz?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
-    if (selectedAnswer || isFinished) return
+    if (!quiz || selectedAnswer || isFinished) return
     const id = setTimeout(tick, 1000)
     return () => clearTimeout(id)
-  }, [timeLeft, selectedAnswer, isFinished]) // eslint-disable-line react-hooks/exhaustive-deps
- 
-  // Регистрируем компонент сайдбара — GameSidebar читает стор сам
+  }, [quiz, timeLeft, selectedAnswer, isFinished]) // eslint-disable-line react-hooks/exhaustive-deps
+
   useSidebarContent(GameSidebar)
- 
+
+  if (!quiz) {
+    return (
+      <div>
+        <h2>Quiz not found</h2>
+        <button type="button" onClick={() => navigate('/app/quizzes')}>
+          Back to quizzes
+        </button>
+      </div>
+    )
+  }
+
   if (!currentQuestion) return null
- 
+
   const totalQuestions = quiz.questions.length
- 
+
   return (
     <>
       <ProgressBar
@@ -77,7 +71,7 @@ export default function PlayPage() {
         total={totalQuestions}
         filled={selectedAnswer ? (currentIndex + 1) / totalQuestions : currentIndex / totalQuestions}
       />
- 
+
       {isOpeningChest && chestsToOpen.length > 0 ? (
         <LootboxScreen
           chestType={chestsToOpen[0]}
@@ -96,6 +90,7 @@ export default function PlayPage() {
             text={currentQuestion.text}
             timeLeft={timeLeft}
             maxTime={currentQuestion.timeLimit ?? quiz.defaultTimeLimit}
+            isPaused={!!selectedAnswer}
           />
           <Answers
             answers={shuffledAnswers}

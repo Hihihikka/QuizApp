@@ -15,41 +15,41 @@ function generateId(): string {
 }
 
 /**
- * Валидирует один вопрос из JSON.
- * Возвращает строку с ошибкой или null если всё ок.
+ * Validates a single question from JSON.
+ * Returns an error string or null if everything is valid.
  */
 function validateQuestion(item: unknown, index: number): string | null {
   if (typeof item !== 'object' || item === null) {
-    return `Вопрос #${index + 1}: должен быть объектом`
+    return `Question #${index + 1}: must be an object`
   }
 
   const q = item as Record<string, unknown>
 
   if (typeof q.text !== 'string' || q.text.trim() === '') {
-    return `Вопрос #${index + 1}: поле "text" обязательно и должно быть строкой`
+    return `Question #${index + 1}: the "text" field is required and must be a string`
   }
 
   if (!Array.isArray(q.answers)) {
-    return `Вопрос #${index + 1}: поле "answers" должно быть массивом`
+    return `Question #${index + 1}: the "answers" field must be an array`
   }
 
   if (q.answers.length < 2) {
-    return `Вопрос #${index + 1}: нужно минимум 2 варианта ответа`
+    return `Question #${index + 1}: at least 2 answer options are required`
   }
 
   if (q.answers.length > 6) {
-    return `Вопрос #${index + 1}: максимум 6 вариантов ответа`
+    return `Question #${index + 1}: maximum 6 answer options are allowed`
   }
 
   for (let i = 0; i < q.answers.length; i++) {
     if (typeof q.answers[i] !== 'string' || (q.answers[i] as string).trim() === '') {
-      return `Вопрос #${index + 1}: ответ #${i + 1} должен быть непустой строкой`
+      return `Question #${index + 1}: answer #${i + 1} must be a non-empty string`
     }
   }
 
   if (q.timeLimit !== undefined) {
     if (typeof q.timeLimit !== 'number' || q.timeLimit < 5 || q.timeLimit > 120) {
-      return `Вопрос #${index + 1}: "timeLimit" должен быть числом от 5 до 120`
+      return `Question #${index + 1}: "timeLimit" must be a number from 5 to 120`
     }
   }
 
@@ -57,38 +57,38 @@ function validateQuestion(item: unknown, index: number): string | null {
 }
 
 /**
- * Парсит JSON-строку от пользователя в массив Question[].
- * Принимает как массив вопросов, так и объект { questions: [...] }.
+ * Parses a user-provided JSON string into a Question[] array.
+ * Accepts both an array of questions and an object { questions: [...] }.
  *
- * Ожидаемый формат:
+ * Expected format:
  * [
  *   {
- *     "text": "Вопрос?",
- *     "answers": ["ПРАВИЛЬНЫЙ", "НЕВЕРНЫЙ 1", "НЕВЕРНЫЙ 2"],
- *     "timeLimit": 15  // опционально
+ *     "text": "Question?",
+ *     "answers": ["CORRECT", "WRONG 1", "WRONG 2"],
+ *     "timeLimit": 15  // optional
  *   }
  * ]
  *
- * answers[0] — всегда правильный ответ.
+ * answers[0] is always the correct answer.
  */
 export async function parseQuestionsJSON(
   raw: string
 ): Promise<ParseResult | ParseError> {
-  // async чтобы в будущем можно было добавить fetch/валидацию через API
+  // async so fetch/API validation can be added later
   await Promise.resolve()
 
   if (raw.trim() === '') {
-    return { success: false, error: 'Поле не может быть пустым' }
+    return { success: false, error: 'Field cannot be empty' }
   }
 
   let parsed: unknown
   try {
     parsed = JSON.parse(raw)
   } catch {
-    return { success: false, error: 'Невалидный JSON. Проверьте синтаксис.' }
+    return { success: false, error: 'Invalid JSON. Check the syntax.' }
   }
 
-  // Поддерживаем оба формата: массив или { questions: [...] }
+  // Support both formats: an array or { questions: [...] }
   let items: unknown[]
   if (Array.isArray(parsed)) {
     items = parsed
@@ -101,21 +101,21 @@ export async function parseQuestionsJSON(
   } else {
     return {
       success: false,
-      error: 'Ожидается массив вопросов или объект с полем "questions"',
+      error: 'Expected an array of questions or an object with a "questions" field',
     }
   }
 
   if (items.length === 0) {
-    return { success: false, error: 'Список вопросов пуст' }
+    return { success: false, error: 'Question list is empty' }
   }
 
-  // Валидируем каждый вопрос
+  // Validate each question
   for (let i = 0; i < items.length; i++) {
     const err = validateQuestion(items[i], i)
     if (err) return { success: false, error: err }
   }
 
-  // Приводим к нашему типу Question
+  // Convert to our Question type
   const questions: Question[] = (items as ImportedQuestion[]).map(item => ({
     id: generateId(),
     text: item.text.trim(),
@@ -127,18 +127,22 @@ export async function parseQuestionsJSON(
 }
 
 /**
- * Пример JSON для отображения в placeholder textarea
+ * Example JSON for the textarea placeholder
  */
 export const EXAMPLE_QUESTIONS_JSON = JSON.stringify(
   [
     {
-      text: 'В каком городе находится знаменитое казино Белладжио?',
-      answers: ['ЛАС-ВЕГАС', 'МОНАКО', 'МАКАО', 'ЛОНДОН'],
+      text: 'In which city is the famous Bellagio casino located?',
+      answers: ['LAS VEGAS', 'MONACO', 'MACAU', 'LONDON'],
       timeLimit: 15,
     },
     {
-      text: 'Какая карточная игра чаще всего встречается в казино?',
-      answers: ['ПОКЕР', 'БРИДЖ', 'УНО', 'ПРЕФЕРАНС'],
+      text: 'Which card game is most commonly played in casinos?',
+      answers: ['POKER', 'BRIDGE', 'UNO', 'PREFRANCE'],
+    },
+    {
+      text: 'Which symbol is most commonly found on slot machines?',
+      answers: ['SEVEN', 'CHERRY', 'STAR', 'BELL'],
     },
   ],
   null,

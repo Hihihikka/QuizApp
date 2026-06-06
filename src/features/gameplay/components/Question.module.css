@@ -65,10 +65,10 @@
   stroke: var(--gold);
   stroke-width: 3;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.9s linear, stroke 0.3s ease;
+  transition: stroke 0.3s ease;
 }
 
-/* urgent state — применяется через data-атрибут чтобы не городить cx() */
+/* urgent state */
 .timer[data-urgent='true'] .timerRingFill {
   stroke: var(--color-wrong);
 }

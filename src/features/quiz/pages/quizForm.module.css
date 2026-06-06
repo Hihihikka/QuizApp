@@ -1,40 +1,4 @@
-/* ── Page wrapper ────────────────────────────────────────────────────────── */
-
-.quizPage {
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  height: 100%;
-  min-height: 0;
-}
-
-/* ── Page header ─────────────────────────────────── */
-
-.pageHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex-shrink: 0;
-  padding-bottom: 24px;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-}
-
-/* ── Form (scrollable area) ──────────────────────────────────────────────── */
+/* ── Scrollable form area ────────────────────────────────────────────────── */
 
 .form {
   display: flex;
@@ -115,29 +79,4 @@
   color: var(--color-wrong);
   letter-spacing: 0.5px;
   flex-shrink: 0;
-}
-
-/* ── Form footer ───────────────────────── */
-
-.formFooter {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  padding-top: 20px;
-  padding-bottom: 8px;
-  flex-shrink: 0;
-  border-top: 1px solid var(--border-gold);
-  margin-top: 8px;
-}
-
-@media (max-width: 768px) {
-  .formFooter {
-    flex-direction: column-reverse;
-    align-items: stretch;
-  }
-}
-
-.footerSpacer {
-  flex: 1;
 }

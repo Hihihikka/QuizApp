@@ -1,26 +1,90 @@
-.quizzesPage {
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* ── Header ──────────────────────────────────────────────────────────────── */
+/* ── Header row ──────────────────────────────────────────────────────────── */
 
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
-.title {
-  font-size: 28px;
-  font-weight: 700;
+/* ── Search input ────────────────────────────────────────────────────────── */
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 160px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--bg-header);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
   color: var(--text-primary);
-  letter-spacing: 1px;
+  font-size: 13px;
+  padding: 8px 12px 8px 32px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.searchInput:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 8px var(--glow-gold);
+}
+
+/* ── Sort button ─────────────────────────────────────────────────────────── */
+
+.sortBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-header);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sortBtn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 8px var(--glow-gold);
+}
+
+.sortArrow {
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.sortArrowAsc {
+  transform: rotate(0deg);
+}
+
+.sortArrowDesc {
+  transform: rotate(180deg);
 }
 
 /* ── Empty state ─────────────────────────────────────────────────────────── */
@@ -39,52 +103,70 @@
   text-align: center;
 }
 
-/* ── Quiz list ───────────────────────────────────────────────────────────── */
+/* ── Table area (scrollable list) ────────────────────────────────────────── */
+
+.tableWrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-gold) transparent;
+}
+
+.tableWrap::-webkit-scrollbar { width: 4px; }
+.tableWrap::-webkit-scrollbar-track { background: transparent; }
+.tableWrap::-webkit-scrollbar-thumb {
+  background-color: var(--border-gold);
+  border-radius: 4px;
+}
 
 .list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
-/* ── Quiz card ───────────────────────────────────────────────────────────── */
+/* ── Quiz row ────────────────────────────────────────────────────────────── */
 
 .card {
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 20px 24px;
+  padding: 16px 20px;
   background-color: var(--bg-header);
-  border: 1px solid var(--border-gold);
-  border-radius: var(--radius);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border-bottom: 1px solid var(--border-gold);
+  transition: background-color 0.15s, box-shadow 0.15s;
   cursor: pointer;
-  /* reset default list-item / button styles */
   text-align: left;
   width: 100%;
 }
 
+.list li:last-child .card {
+  border-bottom: none;
+}
+
 .card:hover {
-  border-color: var(--gold);
-  box-shadow: 0 0 14px var(--glow-gold);
+  background-color: var(--bg-card);
+  box-shadow: inset 3px 0 0 var(--gold);
 }
 
 .card:focus-visible {
   outline: 2px solid var(--gold);
-  outline-offset: 2px;
+  outline-offset: -2px;
 }
 
 .cardInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
 .cardTitle {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
@@ -103,8 +185,9 @@
 
 .cardMeta {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .cardMeta span {
@@ -112,6 +195,7 @@
   color: var(--text-muted);
   letter-spacing: 1px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .cardActions {
@@ -120,16 +204,70 @@
   flex-shrink: 0;
 }
 
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 14px;
+  flex-shrink: 0;
+}
+
+.pageBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  background: var(--bg-header);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 6px var(--glow-gold);
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pageBtnActive {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 6px var(--glow-gold);
+}
+
+.pageDots {
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 0 2px;
+  user-select: none;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  .cardMeta {
+    display: none;
+  }
+
   .card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
   }
 
   .cardActions {
-    width: 100%;
+    flex-shrink: 0;
   }
 }

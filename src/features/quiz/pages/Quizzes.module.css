@@ -59,11 +59,20 @@
   border: 1px solid var(--border-gold);
   border-radius: var(--radius);
   transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  /* reset default list-item / button styles */
+  text-align: left;
+  width: 100%;
 }
 
 .card:hover {
   border-color: var(--gold);
   box-shadow: 0 0 14px var(--glow-gold);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .cardInfo {
@@ -111,54 +120,6 @@
   flex-shrink: 0;
 }
 
-/* ── Buttons ─────────────────────────────────────────────────────────────── */
-
-.btn {
-  background: transparent;
-  border: 1px solid var(--border-gold);
-  color: var(--text-primary);
-  font-size: 11px;
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 8px 16px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
-  white-space: nowrap;
-}
-
-.btn:hover:not(:disabled) {
-  border-color: var(--gold);
-  box-shadow: 0 0 10px var(--glow-gold);
-}
-
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.btnPrimary {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.btnPrimary:hover:not(:disabled) {
-  box-shadow: 0 0 16px var(--glow-gold);
-  background: rgba(201, 168, 76, 0.07);
-}
-
-.btnDanger {
-  border-color: var(--color-wrong);
-  color: var(--color-wrong);
-}
-
-.btnDanger:hover:not(:disabled) {
-  box-shadow: 0 0 16px rgba(var(--color-wrong-rgb), 0.4);
-  background: rgba(var(--color-wrong-rgb), 0.07);
-}
-
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -170,10 +131,5 @@
 
   .cardActions {
     width: 100%;
-  }
-
-  .btn {
-    flex: 1;
-    text-align: center;
   }
 }

@@ -5,6 +5,8 @@
   align-items: center;
   padding: 32px 28px;
   gap: 28px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .footer {

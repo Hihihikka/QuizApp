@@ -1,0 +1,93 @@
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+
+.item:hover {
+  border-color: var(--gold);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.index {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 1px;
+  min-width: 28px;
+  padding-top: 1px;
+  flex-shrink: 0;
+}
+
+.text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.removeBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.removeBtn:hover {
+  color: var(--color-wrong);
+  border-color: var(--color-wrong);
+}
+
+.answers {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 38px;
+}
+
+.answer {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.answerCorrect {
+  color: var(--color-correct);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.correctMark {
+  font-size: 11px;
+}
+
+.timeLimit {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  padding-left: 38px;
+}

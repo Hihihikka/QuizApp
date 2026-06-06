@@ -1,0 +1,124 @@
+/* ── Page wrapper ────────────────────────────────────────────────────────── */
+
+.page {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  /* fill the available height inside .main */
+  height: 100%;
+  min-height: 0;
+}
+
+/* ── Header (fixed, doesn't scroll) ─────────────────────────────────────── */
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  padding-bottom: 24px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Meta badges ─────────────────────────────────────────────────────────── */
+
+.meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.metaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background-color: var(--bg-header);
+  border: 1px solid var(--border-gold);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.metaBadgeHighlight {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* ── Difficulty dot ──────────────────────────────────────────────────────── */
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotEasy   { background-color: var(--color-correct); }
+.dotMedium { background-color: var(--gold); }
+.dotHard   { background-color: var(--color-wrong); }
+
+/* ── Scrollable questions section ────────────────────────────────────────── */
+
+.questionsWrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-gold) transparent;
+}
+
+.questionsWrap::-webkit-scrollbar {
+  width: 4px;
+}
+
+.questionsWrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.questionsWrap::-webkit-scrollbar-thumb {
+  background-color: var(--border-gold);
+  border-radius: 4px;
+}
+
+/* ── Actions footer (fixed at bottom) ───────────────────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 20px;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-gold);
+  margin-top: 8px;
+}
+
+.footerSpacer {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}

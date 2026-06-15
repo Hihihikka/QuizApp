@@ -5,11 +5,8 @@ import Button from '../../../components/ui/Button'
 import styles from './JsonImportSection.module.css'
 
 interface JsonImportSectionProps {
-  /** Hint text shown above the textarea */
   hint?: string
-  /** Number of rows for the textarea */
   rows?: number
-  /** Called with newly parsed questions on success */
   onImport: (questions: Question[]) => void
 }
 

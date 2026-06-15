@@ -3,9 +3,8 @@
 export interface Question {
   id: string
   text: string
-  /** answers[0] is always the correct answer (order is shuffled in the UI) */
   answers: [string, ...string[]]
-  timeLimit?: number // seconds; if omitted, Quiz.defaultTimeLimit is used
+  timeLimit?: number
 }
 
 export type QuizDifficulty = 'easy' | 'medium' | 'hard'
@@ -15,10 +14,10 @@ export interface Quiz {
   title: string
   description?: string
   difficulty: QuizDifficulty
-  defaultTimeLimit: number // default seconds per question
+  defaultTimeLimit: number
   questions: Question[]
-  createdAt: string   // ISO string
-  updatedAt: string   // ISO string
+  createdAt: string
+  updatedAt: string
 }
 
 // ─── Game sessions (needed when adding the backend) ──────────────────────────
@@ -50,8 +49,6 @@ export type CreateQuizDTO = Omit<Quiz, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateQuizDTO = Partial<Omit<Quiz, 'id' | 'createdAt' | 'updatedAt'>>
 
 // ─── JSON question import ────────────────────────────────────────────────────
-
-/** Format pasted by the user into the textarea */
 export interface ImportedQuestion {
   text: string
   answers: string[]

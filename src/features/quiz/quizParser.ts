@@ -16,7 +16,6 @@ function generateId(): string {
 
 /**
  * Validates a single question from JSON.
- * Returns an error string or null if everything is valid.
  */
 function validateQuestion(item: unknown, index: number): string | null {
   if (typeof item !== 'object' || item === null) {
@@ -56,21 +55,6 @@ function validateQuestion(item: unknown, index: number): string | null {
   return null
 }
 
-/**
- * Parses a user-provided JSON string into a Question[] array.
- * Accepts both an array of questions and an object { questions: [...] }.
- *
- * Expected format:
- * [
- *   {
- *     "text": "Question?",
- *     "answers": ["CORRECT", "WRONG 1", "WRONG 2"],
- *     "timeLimit": 15  // optional
- *   }
- * ]
- *
- * answers[0] is always the correct answer.
- */
 export async function parseQuestionsJSON(
   raw: string
 ): Promise<ParseResult | ParseError> {

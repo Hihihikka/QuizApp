@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import type { Quiz, QuizAttempt, QuestionAttempt, AnswerResult } from '../quiz/types'
-import { quizService } from '../quiz/quizService'
 
 // ─── Типы ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +17,7 @@ interface GameState {
   chestsOpenedToday: number
   questionAttempts: QuestionAttempt[]
   attemptStartTime: string | null
+  shuffledAnswers: string[]
 }
 
 interface GameActions {
@@ -40,17 +40,21 @@ function calculateBonus(timeLeft: number, totalTime: number): number {
   const firstThird = totalTime * (2 / 3)
   if (timeLeft < firstThird) return 0
   return Math.round(
-    30 * Math.log(1 + (timeLeft - firstThird) / (totalTime - firstThird)) / Math.log(2)
+      30 * Math.log(1 + (timeLeft - firstThird) / (totalTime - firstThird)) / Math.log(2)
   )
 }
 
 function calculateChests(
-  points: number,
-  alreadyOpened: number
+    points: number,
+    alreadyOpened: number
 ): ('bronze' | 'silver' | 'gold')[] {
   const order: ('bronze' | 'silver' | 'gold')[] = ['bronze', 'silver', 'gold']
   const count = Math.min(Math.floor(points / 1000), 3 - alreadyOpened)
   return order.slice(alreadyOpened, alreadyOpened + count)
+}
+
+function shuffleAnswers(answers: string[]): string[] {
+  return [...answers].sort(() => Math.random() - 0.5)
 }
 
 const INITIAL_STATE: GameState = {
@@ -67,6 +71,7 @@ const INITIAL_STATE: GameState = {
   chestsOpenedToday: 0,
   questionAttempts: [],
   attemptStartTime: null,
+  shuffledAnswers: [],
 }
 
 // ─── Стор ─────────────────────────────────────────────────────────────────────
@@ -80,6 +85,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       quiz,
       timeLeft: quiz.questions[0]?.timeLimit ?? quiz.defaultTimeLimit,
       attemptStartTime: new Date().toISOString(),
+      shuffledAnswers: quiz.questions[0] ? shuffleAnswers(quiz.questions[0].answers) : [],
     })
   },
 
@@ -98,7 +104,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     }
 
     const result: AnswerResult =
-      answer === '__timeout__' ? 'timeout' : isCorrect ? 'correct' : 'wrong'
+        answer === '__timeout__' ? 'timeout' : isCorrect ? 'correct' : 'wrong'
 
     set({
       selectedAnswer: answer,
@@ -108,7 +114,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       questionAttempts: [
         ...questionAttempts,
         {
-          questionId: currentQuestion.id,
+          // quiz здесь всегда загружен с бэка (см. PlayPage), поэтому id у вопроса
+          // гарантированно есть; опциональность в типе нужна только для ещё
+          // не сохранённых вопросов в CreateQuizDTO
+          questionId: currentQuestion.id!,
           selectedAnswer: answer === '__timeout__' ? null : answer,
           result,
           timeSpent: currentTimeLimit - timeLeft,
@@ -131,6 +140,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         currentIndex: currentIndex + 1,
         selectedAnswer: null,
         timeLeft: nextQuestion.timeLimit ?? quiz.defaultTimeLimit,
+        shuffledAnswers: shuffleAnswers(nextQuestion.answers),
       })
     } else {
       const chests = calculateChests(chestPoints, chestsOpenedToday)
@@ -144,7 +154,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         correctCount,
         attempts: questionAttempts,
       }
-      quizService.saveAttempt(attempt)
+      // TODO: бэкенд пока не поддерживает сохранение попыток (нет модели QuizAttempt
+      // в schema.prisma и эндпоинта в QuizController). Когда появится — отправлять
+      // attempt туда, например через quizService.saveAttempt(attempt).
+      console.info('Quiz attempt finished (not yet persisted):', attempt)
 
       set({
         isFinished: true,
@@ -162,6 +175,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       quiz,
       timeLeft: quiz.questions[0]?.timeLimit ?? quiz.defaultTimeLimit,
       attemptStartTime: new Date().toISOString(),
+      shuffledAnswers: quiz.questions[0] ? shuffleAnswers(quiz.questions[0].answers) : [],
     })
   },
 
@@ -196,20 +210,3 @@ export const selectCurrentQuestion = (state: GameState) => {
   if (!state.quiz) return null
   return state.quiz.questions[state.currentIndex]
 }
-
-export const selectShuffledAnswers = (() => {
-  // Кэшируем перемешанные ответы по индексу вопроса
-  let cachedIndex = -1
-  let cachedAnswers: string[] = []
-
-  return (state: GameState): string[] => {
-    if (!state.quiz) return []
-    if (state.currentIndex === cachedIndex) return cachedAnswers
-
-    cachedIndex = state.currentIndex
-    cachedAnswers = [...state.quiz.questions[state.currentIndex].answers].sort(
-      () => Math.random() - 0.5
-    )
-    return cachedAnswers
-  }
-})()

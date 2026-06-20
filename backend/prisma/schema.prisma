@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+model Quiz {
+  id               Int        @id @default(autoincrement())
+  title            String
+  description      String?
+  difficulty       Difficulty @default(medium)
+  defaultTimeLimit Int        @default(30)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  questions        Question[]
+}
+
+model Question {
+  id        Int      @id @default(autoincrement())
+  quizId    Int
+  text      String
+  answers   String[]
+  timeLimit Int?
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}

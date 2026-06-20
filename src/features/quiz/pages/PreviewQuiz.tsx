@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { quizService } from '../quizService'
-import type { QuizDifficulty } from '../types'
+import type { Quiz, QuizDifficulty } from '../types'
 import Button from '../../../components/ui/Button'
 import QuizFormSection from '../components/QuizFormSection'
 import QuestionPreviewList from '../components/QuestionPreviewList'
@@ -23,82 +23,82 @@ const DIFFICULTY_DOT: Record<QuizDifficulty, string> = {
 export default function PreviewQuiz() {
   const { quizId } = useParams<{ quizId: string }>()
   const navigate = useNavigate()
+  const [quiz, setQuiz] = useState<Quiz | undefined>(undefined)
+  const [notFound, setNotFound] = useState(false)
 
-  const quiz = useMemo(
-    () => (quizId ? quizService.getById(quizId) : undefined),
-    [quizId]
-  )
+  useEffect(() => {
+    if (!quizId) return
+    quizService.getById(quizId)
+        .then(setQuiz)
+        .catch(() => setNotFound(true))
+  }, [quizId])
 
-  if (!quiz) {
+  if (notFound) {
     return (
-      <div className={layout.page}>
-        <div className={layout.pageHeader}>
-          <h1 className={layout.title}>Quiz not found</h1>
-          <p className={layout.description}>
-            This quiz doesn't exist or has been deleted.
-          </p>
+        <div className={layout.page}>
+          <div className={layout.pageHeader}>
+            <h1 className={layout.title}>Quiz not found</h1>
+            <p className={layout.description}>
+              This quiz doesn't exist or has been deleted.
+            </p>
+          </div>
+          <div className={layout.footer}>
+            <Button type="button" onClick={() => navigate('/app/quizzes')}>
+              Back to quizzes
+            </Button>
+          </div>
         </div>
-        <div className={layout.footer}>
-          <Button type="button" onClick={() => navigate('/app/quizzes')}>
-            Back to quizzes
-          </Button>
-        </div>
-      </div>
     )
   }
 
-  return (
-    <div className={layout.page}>
+  if (!quiz) {
+    return <div className={layout.page}><p>Loading...</p></div>
+  }
 
-      <div className={layout.pageHeader}>
-        <h1 className={layout.title}>{quiz.title}</h1>
-        {quiz.description && (
-          <p className={layout.description}>{quiz.description}</p>
-        )}
-        <div className={styles.meta}>
+  return (
+      <div className={layout.page}>
+        <div className={layout.pageHeader}>
+          <h1 className={layout.title}>{quiz.title}</h1>
+          {quiz.description && (
+              <p className={layout.description}>{quiz.description}</p>
+          )}
+          <div className={styles.meta}>
           <span className={`${styles.metaBadge} ${styles.metaBadgeHighlight}`}>
             {quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}
           </span>
-          <span className={styles.metaBadge}>
+            <span className={styles.metaBadge}>
             <span className={`${styles.dot} ${DIFFICULTY_DOT[quiz.difficulty]}`} />
-            {DIFFICULTY_LABEL[quiz.difficulty]}
+              {DIFFICULTY_LABEL[quiz.difficulty]}
           </span>
-          <span className={styles.metaBadge}>
+            <span className={styles.metaBadge}>
             ⏱ {quiz.defaultTimeLimit}s / question
           </span>
+          </div>
+        </div>
+
+        <div className={styles.questionsWrap}>
+          <QuizFormSection title="Questions" badge={quiz.questions.length}>
+            <QuestionPreviewList questions={quiz.questions} />
+          </QuizFormSection>
+        </div>
+
+        <div className={layout.footer}>
+          <Button type="button" onClick={() => navigate('/app/quizzes')}>
+            Back
+          </Button>
+          <div className={layout.footerSpacer} />
+          <Button type="button" onClick={() => navigate(`/app/quizzes/${quiz.id}/edit`)}>
+            Edit
+          </Button>
+          <Button
+              variant="primary"
+              size="lg"
+              type="button"
+              onClick={() => navigate(`/play/${quiz.id}`)}
+          >
+            ▶ Play
+          </Button>
         </div>
       </div>
-
-      <div className={styles.questionsWrap}>
-        <QuizFormSection
-          title="Questions"
-          badge={quiz.questions.length}
-        >
-          <QuestionPreviewList questions={quiz.questions} />
-        </QuizFormSection>
-      </div>
-
-      <div className={layout.footer}>
-        <Button type="button" onClick={() => navigate('/app/quizzes')}>
-          Back
-        </Button>
-        <div className={layout.footerSpacer} />
-        <Button
-          type="button"
-          onClick={() => navigate(`/app/quizzes/${quiz.id}/edit`)}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="primary"
-          size="lg"
-          type="button"
-          onClick={() => navigate(`/play/${quiz.id}`)}
-        >
-          ▶ Play
-        </Button>
-      </div>
-
-    </div>
   )
 }

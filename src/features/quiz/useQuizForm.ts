@@ -1,12 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuizStore } from './useQuizStore'
 import { quizService } from './quizService'
-import type { Question } from './types'
+import type { Quiz, Question, DraftQuestion } from './types'
 import type { QuizMetaValues } from './components/QuizMetaFields'
 
 interface UseQuizFormOptions {
-  /** Pass quizId to switch the hook into edit mode */
   quizId?: string
 }
 
@@ -16,34 +15,41 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
 
   const isEditMode = Boolean(quizId)
 
-  const existingQuiz = useMemo(
-    () => (quizId ? quizService.getById(quizId) : undefined),
-    [quizId]
-  )
+  const [existingQuiz, setExistingQuiz] = useState<Quiz | undefined>(undefined)
 
-  // ── Form state ──────────────────────────────────────────────────────────────
+  const [form, setForm] = useState<QuizMetaValues>({
+    title: '',
+    description: '',
+    difficulty: 'medium',
+    defaultTimeLimit: 15,
+  })
 
-  const [form, setForm] = useState<QuizMetaValues>(() => ({
-    title: existingQuiz?.title ?? '',
-    description: existingQuiz?.description ?? '',
-    difficulty: existingQuiz?.difficulty ?? 'medium',
-    defaultTimeLimit: existingQuiz?.defaultTimeLimit ?? 15,
-  }))
-
-  const [questions, setQuestions] = useState<Question[]>(
-    () => existingQuiz?.questions ?? []
-  )
-
+  // Локально список может содержать как уже сохранённые вопросы (Question, при
+  // редактировании существующего квиза), так и черновики из импорта (DraftQuestion).
+  const [questions, setQuestions] = useState<(Question | DraftQuestion)[]>([])
   const [submitError, setSubmitError] = useState<string | null>(null)
-
-  // ── Delete state (edit mode only) ──────────────────────────────────────────
-
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
+  // ── Загружаем квиз если edit mode ─────────────────────────────────────────
+
+  useEffect(() => {
+    if (!quizId) return
+    quizService.getById(quizId).then(quiz => {
+      setExistingQuiz(quiz)
+      setForm({
+        title: quiz.title,
+        description: quiz.description ?? '',
+        difficulty: quiz.difficulty,
+        defaultTimeLimit: quiz.defaultTimeLimit,
+      })
+      setQuestions(quiz.questions)
+    })
+  }, [quizId])
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
   function handleFormChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) {
     const { name, value } = e.target
     setForm(prev => ({
@@ -52,11 +58,7 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
     }))
   }
 
-  /**
-   * Create: replaces the whole list (re-import creates a new question set).
-   * Edit: appends to existing questions (additional questions can be imported).
-   */
-  function handleImport(imported: Question[]) {
+  function handleImport(imported: DraftQuestion[]) {
     if (isEditMode) {
       setQuestions(prev => [...prev, ...imported])
     } else {
@@ -64,8 +66,8 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
     }
   }
 
-  function handleRemoveQuestion(id: string) {
-    setQuestions(prev => prev.filter(q => q.id !== id))
+  function handleRemoveQuestion(index: number) {
+    setQuestions(prev => prev.filter((_, i) => i !== index))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -81,12 +83,21 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
       return
     }
 
+    // Бэк сам присваивает id/quizId при сохранении — отправляем вопросы
+    // в форме DraftQuestion независимо от того, пришли они уже сохранёнными
+    // (Question, при редактировании) или как черновик (DraftQuestion, импорт).
+    const questionsForSubmit = questions.map(({ text, answers, timeLimit }) => ({
+      text,
+      answers,
+      ...(timeLimit !== undefined ? { timeLimit } : {}),
+    }))
+
     try {
       if (isEditMode) {
-        await updateQuiz(quizId!, { ...form, questions })
+        await updateQuiz(quizId!, { ...form, questions: questionsForSubmit })
         navigate('/app/quizzes')
       } else {
-        const quiz = await createQuiz({ ...form, questions })
+        const quiz = await createQuiz({ ...form, questions: questionsForSubmit })
         navigate(`/app/quizzes/${quiz.id}/preview`)
       }
     } catch {
@@ -96,12 +107,10 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
 
   async function handleDelete() {
     if (!isEditMode) return
-
     if (!confirmDelete) {
       setConfirmDelete(true)
       return
     }
-
     try {
       await deleteQuiz(quizId!)
       navigate('/app/quizzes')
@@ -111,16 +120,13 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
   }
 
   return {
-    // data
     form,
     questions,
     existingQuiz,
     isEditMode,
-    // statuses
     loading,
     submitError,
     confirmDelete,
-    // handlers
     handleFormChange,
     handleImport,
     handleRemoveQuestion,

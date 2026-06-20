@@ -1,17 +1,13 @@
-import type { ImportedQuestion, Question } from './types'
+import type { ImportedQuestion, DraftQuestion } from './types'
 
 export interface ParseResult {
   success: true
-  questions: Question[]
+  questions: DraftQuestion[]
 }
 
 export interface ParseError {
   success: false
   error: string
-}
-
-function generateId(): string {
-  return `q-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
 /**
@@ -56,7 +52,7 @@ function validateQuestion(item: unknown, index: number): string | null {
 }
 
 export async function parseQuestionsJSON(
-  raw: string
+    raw: string
 ): Promise<ParseResult | ParseError> {
   // async so fetch/API validation can be added later
   await Promise.resolve()
@@ -77,9 +73,9 @@ export async function parseQuestionsJSON(
   if (Array.isArray(parsed)) {
     items = parsed
   } else if (
-    typeof parsed === 'object' &&
-    parsed !== null &&
-    Array.isArray((parsed as Record<string, unknown>).questions)
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      Array.isArray((parsed as Record<string, unknown>).questions)
   ) {
     items = (parsed as { questions: unknown[] }).questions
   } else {
@@ -99,9 +95,8 @@ export async function parseQuestionsJSON(
     if (err) return { success: false, error: err }
   }
 
-  // Convert to our Question type
-  const questions: Question[] = (items as ImportedQuestion[]).map(item => ({
-    id: generateId(),
+  // Convert to our DraftQuestion type
+  const questions: DraftQuestion[] = (items as ImportedQuestion[]).map(item => ({
     text: item.text.trim(),
     answers: item.answers.map(a => a.trim()) as [string, ...string[]],
     ...(item.timeLimit !== undefined ? { timeLimit: item.timeLimit } : {}),
@@ -114,21 +109,21 @@ export async function parseQuestionsJSON(
  * Example JSON for the textarea placeholder
  */
 export const EXAMPLE_QUESTIONS_JSON = JSON.stringify(
-  [
-    {
-      text: 'In which city is the famous Bellagio casino located?',
-      answers: ['LAS VEGAS', 'MONACO', 'MACAU', 'LONDON'],
-      timeLimit: 15,
-    },
-    {
-      text: 'Which card game is most commonly played in casinos?',
-      answers: ['POKER', 'BRIDGE', 'UNO', 'PREFRANCE'],
-    },
-    {
-      text: 'Which symbol is most commonly found on slot machines?',
-      answers: ['SEVEN', 'CHERRY', 'STAR', 'BELL'],
-    },
-  ],
-  null,
-  2
+    [
+      {
+        text: 'In which city is the famous Bellagio casino located?',
+        answers: ['LAS VEGAS', 'MONACO', 'MACAU', 'LONDON'],
+        timeLimit: 15,
+      },
+      {
+        text: 'Which card game is most commonly played in casinos?',
+        answers: ['POKER', 'BRIDGE', 'UNO', 'PREFRANCE'],
+      },
+      {
+        text: 'Which symbol is most commonly found on slot machines?',
+        answers: ['SEVEN', 'CHERRY', 'STAR', 'BELL'],
+      },
+    ],
+    null,
+    2
 )

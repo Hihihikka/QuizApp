@@ -1,90 +1,53 @@
-import type { Quiz, CreateQuizDTO, UpdateQuizDTO, QuizAttempt } from './types'
+import type { Quiz, CreateQuizDTO, UpdateQuizDTO } from './types'
 
-const STORAGE_KEYS = {
-  QUIZZES: 'quizcraft:quizzes',
-  ATTEMPTS: 'quizcraft:attempts',
-} as const
+const API_URL = 'http://localhost:3000/api/quizzes'
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── helpers ────────────────────────────────────────────────────────────────
 
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-}
-
-function now(): string {
-  return new Date().toISOString()
-}
-
-function readStorage<T>(key: string): T[] {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as T[]) : []
-  } catch {
-    return []
+async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}))
+    throw new Error(error.message ?? `Request failed: ${res.status}`)
   }
+  // 204 No Content (например, DELETE) не имеет тела — res.json() на пустом
+  // теле кинет SyntaxError, поэтому возвращаем undefined вместо парсинга
+  if (res.status === 204) {
+    return undefined as T
+  }
+  return res.json()
 }
 
-function writeStorage<T>(key: string, data: T[]): void {
-  localStorage.setItem(key, JSON.stringify(data))
-}
-
-// ─── Quiz CRUD ────────────────────────────────────────────────────────────────
+// ─── Quiz CRUD ───────────────────────────────────────────────────────────────
 
 export const quizService = {
-  // READ
-  getAll(): Quiz[] {
-    return readStorage<Quiz>(STORAGE_KEYS.QUIZZES)
+  getAll(search?: string): Promise<Quiz[]> {
+    const url = search ? `${API_URL}?search=${encodeURIComponent(search)}` : API_URL
+    return request<Quiz[]>(url)
   },
 
-  getById(id: string): Quiz | undefined {
-    return this.getAll().find(q => q.id === id)
+  getById(id: string): Promise<Quiz> {
+    return request<Quiz>(`${API_URL}/${id}`)
   },
 
-  // CREATE
-  create(dto: CreateQuizDTO): Quiz {
-    const quiz: Quiz = {
-      ...dto,
-      id: generateId(),
-      createdAt: now(),
-      updatedAt: now(),
-    }
-    const all = this.getAll()
-    writeStorage(STORAGE_KEYS.QUIZZES, [...all, quiz])
-    return quiz
+  create(dto: CreateQuizDTO): Promise<Quiz> {
+    return request<Quiz>(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    })
   },
 
-  // UPDATE
-  update(id: string, dto: UpdateQuizDTO): Quiz {
-    const all = this.getAll()
-    const index = all.findIndex(q => q.id === id)
-    if (index === -1) throw new Error(`Quiz ${id} not found`)
-
-    const updated: Quiz = {
-      ...all[index],
-      ...dto,
-      updatedAt: now(),
-    }
-    all[index] = updated
-    writeStorage(STORAGE_KEYS.QUIZZES, all)
-    return updated
+  update(id: string, dto: UpdateQuizDTO): Promise<Quiz> {
+    return request<Quiz>(`${API_URL}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(dto),
+    })
   },
 
-  // DELETE
-  delete(id: string): void {
-    const filtered = this.getAll().filter(q => q.id !== id)
-    writeStorage(STORAGE_KEYS.QUIZZES, filtered)
-  },
-
-  // ─── Attempts ──────────────────────────────────────────────────────────────
-
-  saveAttempt(attempt: QuizAttempt): void {
-    const all = readStorage<QuizAttempt>(STORAGE_KEYS.ATTEMPTS)
-    writeStorage(STORAGE_KEYS.ATTEMPTS, [...all, attempt])
-  },
-
-  getAttemptsByQuiz(quizId: string): QuizAttempt[] {
-    return readStorage<QuizAttempt>(STORAGE_KEYS.ATTEMPTS).filter(
-      a => a.quizId === quizId
-    )
+  delete(id: string): Promise<void> {
+    return request<void>(`${API_URL}/${id}`, { method: 'DELETE' })
   },
 }

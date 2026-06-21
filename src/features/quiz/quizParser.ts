@@ -1,4 +1,5 @@
 import type { ImportedQuestion, DraftQuestion } from './types'
+import { TIME_LIMIT_MIN, TIME_LIMIT_MAX, isValidTimeLimit } from '@quizapp/shared'
 
 export interface ParseResult {
   success: true
@@ -43,8 +44,8 @@ function validateQuestion(item: unknown, index: number): string | null {
   }
 
   if (q.timeLimit !== undefined) {
-    if (typeof q.timeLimit !== 'number' || q.timeLimit < 5 || q.timeLimit > 120) {
-      return `Question #${index + 1}: "timeLimit" must be a number from 5 to 120`
+    if (!isValidTimeLimit(q.timeLimit)) {
+      return `Question #${index + 1}: "timeLimit" must be a whole number from ${TIME_LIMIT_MIN} to ${TIME_LIMIT_MAX}`
     }
   }
 

@@ -4,6 +4,7 @@ import { useQuizStore } from './useQuizStore'
 import { quizService } from './quizService'
 import type { Quiz, Question, DraftQuestion } from './types'
 import type { QuizMetaValues } from './components/QuizMetaFields'
+import { TIME_LIMIT_MIN, TIME_LIMIT_MAX } from '@quizapp/shared'
 
 interface UseQuizFormOptions {
   quizId?: string
@@ -52,10 +53,20 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) {
     const { name, value } = e.target
-    setForm(prev => ({
-      ...prev,
-      [name]: name === 'defaultTimeLimit' ? Number(value) : value,
-    }))
+
+    if (name === 'defaultTimeLimit') {
+      // type="number" на инпуте не блокирует ручной ввод вне min/max и не
+      // защищает от NaN при пустом/нечисловом значении — поэтому здесь
+      // санитизация, а не просто Number(value).
+      const num = Number(value)
+      setForm(prev => ({
+        ...prev,
+        defaultTimeLimit: Number.isFinite(num) ? num : prev.defaultTimeLimit,
+      }))
+      return
+    }
+
+    setForm(prev => ({ ...prev, [name]: value }))
   }
 
   function handleImport(imported: DraftQuestion[]) {
@@ -76,6 +87,10 @@ export function useQuizForm({ quizId }: UseQuizFormOptions = {}) {
 
     if (form.title.trim() === '') {
       setSubmitError('Enter the quiz title')
+      return
+    }
+    if (form.defaultTimeLimit < TIME_LIMIT_MIN || form.defaultTimeLimit > TIME_LIMIT_MAX) {
+      setSubmitError(`Time per question must be between ${TIME_LIMIT_MIN} and ${TIME_LIMIT_MAX} seconds`)
       return
     }
     if (questions.length === 0) {

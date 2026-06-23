@@ -29,7 +29,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Quiz & Poker API')
     .setDescription(
-      'API для квизов, попыток прохождения и (в перспективе) покер-сессий',
+      'API for quizzes, attempts and (in the future) poker sessions',
     )
     .setVersion('1.0')
     .build();
